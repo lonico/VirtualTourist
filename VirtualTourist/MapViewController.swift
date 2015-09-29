@@ -47,9 +47,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
         if pinView == nil {
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-            pinView!.canShowCallout = true
+            pinView!.canShowCallout = false
             pinView!.pinTintColor = UIColor.redColor()
-            pinView!.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
+            //pinView!.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
             pinView!.draggable = true
         }
         else {
@@ -58,13 +58,22 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         return pinView
     }
     
-    // This delegate method is implemented to respond to taps.     
+    // This delegate method is implemented to respond to tapping a callout button.
     func mapView(mapView: MKMapView, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) -> Void {
         print("Tapped")
-        let galleryVC = self.storyboard?.instantiateViewControllerWithIdentifier("photoGallery")
-        navigationController?.navigationBarHidden = false
-        navigationController?.pushViewController(galleryVC!, animated: true)
-        print(self.navigationController)
+        mapView.deselectAnnotation(annotationView.annotation, animated: true)
+        let galleryVC = self.storyboard?.instantiateViewControllerWithIdentifier("photoGallery") as! PhotoGalleryViewController
+        galleryVC.pinView = annotationView
+        navigationController?.pushViewController(galleryVC, animated: true)
+    }
+    
+    // This delegate method is implemented to respond to tapping a pin.
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        print("Selected")
+        mapView.deselectAnnotation(view.annotation, animated: true)
+        let galleryVC = self.storyboard?.instantiateViewControllerWithIdentifier("photoGallery") as! PhotoGalleryViewController
+        galleryVC.pinView = view
+        navigationController?.pushViewController(galleryVC, animated: true)
     }
     
     // Delegate to respond to dragging a pin
