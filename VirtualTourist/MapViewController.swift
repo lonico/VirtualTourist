@@ -20,6 +20,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             mapView.setRegion(region, animated: true)
         }
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        navigationController?.navigationBarHidden = true
+    }
 
     // detect a long press and add a new pin
     @IBAction func longPressGesture(sender: UILongPressGestureRecognizer) {
@@ -57,6 +61,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     // This delegate method is implemented to respond to taps.     
     func mapView(mapView: MKMapView, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) -> Void {
         print("Tapped")
+        let galleryVC = self.storyboard?.instantiateViewControllerWithIdentifier("photoGallery")
+        navigationController?.navigationBarHidden = false
+        navigationController?.pushViewController(galleryVC!, animated: true)
+        print(self.navigationController)
     }
     
     // Delegate to respond to dragging a pin
