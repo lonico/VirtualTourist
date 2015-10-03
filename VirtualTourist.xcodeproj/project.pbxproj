@@ -17,6 +17,10 @@
 		C03F01091BB7A672002BA7F3 /* VirtualTouristUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03F01081BB7A672002BA7F3 /* VirtualTouristUITests.swift */; };
 		C03F01171BB7A7D7002BA7F3 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03F01161BB7A7D7002BA7F3 /* MapViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		C0D4264E1BBA401D00311C0F /* PhotoGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4264D1BBA401D00311C0F /* PhotoGalleryViewController.swift */; settings = {ASSET_TAGS = (); }; };
+		C0D426501BBB889C00311C0F /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4264F1BBB889C00311C0F /* CollectionViewCell.swift */; settings = {ASSET_TAGS = (); }; };
+		C0D426521BBBA46F00311C0F /* GeoExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D426511BBBA46F00311C0F /* GeoExtensions.swift */; settings = {ASSET_TAGS = (); }; };
+		C0D426541BBBA9D200311C0F /* FlickrAPIs.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D426531BBBA9D200311C0F /* FlickrAPIs.swift */; settings = {ASSET_TAGS = (); }; };
+		C0D426581BBE3DED00311C0F /* PhotoFullViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D426571BBE3DED00311C0F /* PhotoFullViewController.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +57,10 @@
 		C03F010A1BB7A672002BA7F3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C03F01161BB7A7D7002BA7F3 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		C0D4264D1BBA401D00311C0F /* PhotoGalleryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoGalleryViewController.swift; sourceTree = "<group>"; };
+		C0D4264F1BBB889C00311C0F /* CollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
+		C0D426511BBBA46F00311C0F /* GeoExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeoExtensions.swift; sourceTree = "<group>"; };
+		C0D426531BBBA9D200311C0F /* FlickrAPIs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlickrAPIs.swift; sourceTree = "<group>"; };
+		C0D426571BBE3DED00311C0F /* PhotoFullViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PhotoFullViewController.swift; path = ../PhotoFullViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,8 +113,12 @@
 			children = (
 				C03F00E51BB7A672002BA7F3 /* AppDelegate.swift */,
 				C03F00E71BB7A672002BA7F3 /* ViewController.swift */,
+				C0D426511BBBA46F00311C0F /* GeoExtensions.swift */,
+				C0D426531BBBA9D200311C0F /* FlickrAPIs.swift */,
 				C03F01161BB7A7D7002BA7F3 /* MapViewController.swift */,
 				C0D4264D1BBA401D00311C0F /* PhotoGalleryViewController.swift */,
+				C0D4264F1BBB889C00311C0F /* CollectionViewCell.swift */,
+				C0D426571BBE3DED00311C0F /* PhotoFullViewController.swift */,
 				C03F00E91BB7A672002BA7F3 /* Main.storyboard */,
 				C03F00EF1BB7A672002BA7F3 /* Assets.xcassets */,
 				C03F00F11BB7A672002BA7F3 /* LaunchScreen.storyboard */,
@@ -266,8 +278,12 @@
 			files = (
 				C03F00E81BB7A672002BA7F3 /* ViewController.swift in Sources */,
 				C03F00E61BB7A672002BA7F3 /* AppDelegate.swift in Sources */,
+				C0D426501BBB889C00311C0F /* CollectionViewCell.swift in Sources */,
+				C0D426541BBBA9D200311C0F /* FlickrAPIs.swift in Sources */,
 				C03F00EE1BB7A672002BA7F3 /* VirtualTourist.xcdatamodeld in Sources */,
+				C0D426581BBE3DED00311C0F /* PhotoFullViewController.swift in Sources */,
 				C03F01171BB7A7D7002BA7F3 /* MapViewController.swift in Sources */,
+				C0D426521BBBA46F00311C0F /* GeoExtensions.swift in Sources */,
 				C0D4264E1BBA401D00311C0F /* PhotoGalleryViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -16,13 +16,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        if let region = getSavedRegion() {
+        if let region = MKCoordinateRegion.getSavedRegion() {
             mapView.setRegion(region, animated: true)
         }
     }
     
     override func viewWillAppear(animated: Bool) {
         navigationController?.navigationBarHidden = true
+        super.viewWillAppear(true)
     }
 
     // detect a long press and add a new pin
@@ -33,7 +34,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             let coordinate = mapView.convertPoint(point, toCoordinateFromView: mapView)
             let annotation = MKPointAnnotation()
             annotation.coordinate = coordinate
-            annotation.title = coord2text(coordinate)
+            annotation.title = coordinate.coord2text()
             mapView.addAnnotation(annotation)
         }
     }
@@ -84,7 +85,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             print("drag \(view.annotation?.coordinate)")
             let newAnnotation = MKPointAnnotation()
             newAnnotation.coordinate = (view.annotation?.coordinate)!
-            newAnnotation.title = coord2text((view.annotation?.coordinate)!)
+            newAnnotation.title = view.annotation?.coordinate.coord2text()
             mapView.removeAnnotation(view.annotation!)
             mapView.addAnnotation(newAnnotation)
         }
@@ -92,79 +93,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     // Delegate to respond to moving or zooming the map region
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        saveRegion(mapView.region)
+        mapView.region.saveRegion()
     }
     
-    // TODO: Refactor in a different file
-    // Service function, coordinate to String
-    func coord2text(coordinate: CLLocationCoordinate2D) -> String {
-        
-        let _long = doubleToTextWithNWSE(coordinate.longitude, direction: .longitude)
-        let _lat = doubleToTextWithNWSE(coordinate.latitude, direction: .latitude)
-        return _long + " - " + _lat
-    }
-    
-    func doubleToTextWithNWSE(var value: Double, direction: Direction) -> String {
-        
-        var suffix = ""
-        if value < 0 {
-            switch direction {
-            case .longitude: suffix = LongitudeSuffix.negative
-            case .latitude: suffix = LatitudeSuffix.negative
-            }
-            value = -value
-        } else if value > 0 {
-            switch direction {
-            case .longitude: suffix = LongitudeSuffix.positive
-            case .latitude: suffix = LatitudeSuffix.positive
-            }
-        }
-        return String(format: "%.3f%@", value, suffix)
-    }
-    
-    
-    enum Direction {
-        case longitude
-        case latitude
-    }
-    
-    struct RegionKeys {
-        static let latitude = "latitude"
-        static let longitude = "longitude"
-        static let deltaLat = "deltaLat"
-        static let deltaLong = "deltaLong"
-    }
-    
-    struct LongitudeSuffix {
-        static let positive = "E"
-        static let negative = "W"
-    }
-    
-    struct LatitudeSuffix {
-        static let positive = "N"
-        static let negative = "S"
-    }
-    
-    func saveRegion(region: MKCoordinateRegion) {
-        
-        var dictionary = [String: AnyObject]()
-        dictionary[RegionKeys.latitude] = region.center.latitude
-        dictionary[RegionKeys.longitude] = region.center.longitude
-        dictionary[RegionKeys.deltaLat] = region.span.latitudeDelta
-        dictionary[RegionKeys.deltaLong] = region.span.longitudeDelta
-        
-        let defaults = NSUserDefaults.standardUserDefaults()
-        defaults.setObject(dictionary, forKey: "mapViewRegion")
-    }
-    
-    func getSavedRegion() -> MKCoordinateRegion! {
-        
-        let defaults = NSUserDefaults.standardUserDefaults()
-        if let dictionary = defaults.dictionaryForKey("mapViewRegion") {
-            let center = CLLocationCoordinate2D(latitude: dictionary[RegionKeys.latitude] as! CLLocationDegrees, longitude: dictionary[RegionKeys.longitude] as! CLLocationDegrees)
-            let span = MKCoordinateSpan(latitudeDelta: dictionary[RegionKeys.deltaLat]  as! CLLocationDegrees, longitudeDelta: dictionary[RegionKeys.deltaLong] as! CLLocationDegrees)
-            return MKCoordinateRegion(center: center, span: span)
-        }
-        return nil
-    }
 }
