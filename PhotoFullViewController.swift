@@ -22,4 +22,8 @@ class PhotoFullViewController: UIViewController {
     @IBAction func tapGesture(sender: UITapGestureRecognizer) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
+    
+    func refresh_image() {
+        imageView.image = photoImage
+    }
 }

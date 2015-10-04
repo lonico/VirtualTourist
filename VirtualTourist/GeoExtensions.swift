@@ -6,7 +6,6 @@
 //  Copyright © 2015 Laurent Nicolas. All rights reserved.
 //
 
-import Foundation
 import MapKit
 
 extension CLLocationCoordinate2D {

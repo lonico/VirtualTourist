@@ -95,5 +95,4 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         mapView.region.saveRegion()
     }
-    
 }

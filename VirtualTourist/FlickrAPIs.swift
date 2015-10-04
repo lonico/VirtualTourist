@@ -6,9 +6,8 @@
 //  Copyright © 2015 Laurent Nicolas. All rights reserved.
 //
 
-import Foundation
-import MapKit
 import GameKit
+import MapKit
 
 // TODO: move somewhere else
 
@@ -51,13 +50,6 @@ func testme(coordinate: CLLocationCoordinate2D, completion_handler: ([(String?, 
                         }
                     }
                 }
-//                if let imageData = NSData(contentsOfURL: imageURL!) {
-//                    //cell.image.image = UIImage(data: imageData)
-//                    //cell.title.text = photoTitle
-//                    print(photoTitle)
-//                } else {
-//                print("Image does not exist at \(imageURL)")
-//                }
             }
             completion_handler(imageURLs, nil)
         }
@@ -140,7 +132,7 @@ func getImagesFromFlickrBySearchWithPage(methodArguments: [String : AnyObject], 
     let url = NSURL(string: urlString)!
     let request = NSURLRequest(URL: url)
     
-    let task = session.dataTaskWithRequest(request) {data, response, downloadError in
+    let task = session.dataTaskWithRequest(request) { data, response, downloadError in
         if let error = downloadError {
             print("Could not complete the request \(error)")
         } else {
@@ -158,7 +150,9 @@ func getImagesFromFlickrBySearchWithPage(methodArguments: [String : AnyObject], 
                     if totalPhotosVal > 0 {
                         if let photosArray = photosDictionary["photo"] as? [[String: AnyObject]] {
                             
-                            let shuffledPics = GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(photosArray) as! [[String: AnyObject]]
+                            // TODO:
+                            //let shuffledPics = GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(photosArray) as! [[String: AnyObject]]
+                            let shuffledPics = photosArray
                             completion_handler(shuffledPics, nil)
                             
                         } else {
@@ -178,6 +172,28 @@ func getImagesFromFlickrBySearchWithPage(methodArguments: [String : AnyObject], 
         }
     }
     
+    task.resume()
+}
+
+func getImageFromURLString(urlString: String, completion_handler: (UIImage?) -> Void) {
+    
+    let session = NSURLSession.sharedSession()
+    let url = NSURL(string: urlString)!
+    let request = NSURLRequest(URL: url)
+    var image: UIImage? = nil
+    
+    let task = session.dataTaskWithRequest(request) { data, response, downloadError in
+        if let error = downloadError {
+            print("Could not complete the request \(error.localizedDescription)")
+        } else {
+            if let imageData = data {
+                image = UIImage(data: imageData)
+            } else {
+                print("No data: \(response?.description)")
+            }
+        }
+        completion_handler(image)
+    }
     task.resume()
 }
 

@@ -22,7 +22,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+    
         // Do any additional setup after loading the view.
         
         self.activityWheel.startAnimating()
@@ -32,7 +32,10 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
                 self.imageURLs = urls
                 dispatch_async(dispatch_get_main_queue()) {
                     self.activityWheel.stopAnimating()
+                    print("loading data")
+                    let time0 = NSDate()
                     self.collectionView.reloadData()
+                    print("elapsed reloadData: \(-time0.timeIntervalSinceNow)")
                 }
             }
         }
@@ -64,8 +67,18 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
         // Pass the selected object to the new view controller.
         let vc = segue.destinationViewController as! PhotoFullViewController
         let cell = sender as! CollectionViewCell
-        let image = getImageForURLPath(cell.url_m)
-        vc.photoImage = image
+        let url_m = cell.url_m
+        let image = imageDataStore[url_m]
+        if image == nil {
+            getImageForURLPath(url_m) { image in
+                dispatch_async(dispatch_get_main_queue()) {
+                    vc.photoImage = image
+                    vc.refresh_image()
+                }
+            }
+        } else {
+            vc.photoImage = image
+        }
     }
 
     // MARK: CollectionView data source delegates
@@ -79,36 +92,41 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
         let url = imageURLs?[indexPath.row]
         if url != nil {
             let url_t = url!.1
-            let image = getImageForURLPath(url_t)
-            if image != nil {
+            let image = imageDataStore[url_t]
+            if image == nil {
+                getImageForURLPath(url_t) { image in
+                    if image != nil {
+                        (cell as! CollectionViewCell).image.image = image
+                        (cell as! CollectionViewCell).url_m = url!.2
+                        dispatch_async(dispatch_get_main_queue()) {
+                            
+                            let section = indexPath.section
+                            if (collectionView.numberOfSections() > 0 && collectionView.numberOfItemsInSection(section) > 0 && collectionView.indexPathsForVisibleItems().contains(indexPath)) {
+                                // TODO: reloadData generates too many requests
+                                //collectionView.reloadData()
+                                // reloadItemsAtIndexPaths crashed if the view goes out of focus
+                                collectionView.reloadItemsAtIndexPaths([indexPath])
+                            }
+                        }
+                    }
+                }
+            } else {
                 (cell as! CollectionViewCell).image.image = image
                 (cell as! CollectionViewCell).url_m = url!.2
             }
         }
-            //cell.title.text = photoTitle
-            //print(photoTitle)
         return cell
     }
     
-    func getImageForURLPath(urlPath: String) -> UIImage? {
-    
-        var image = imageDataStore[urlPath]
-        if image == nil {
-            self.activityWheel.startAnimating()
-            if let nsurl = NSURL(string: urlPath) {
-                if let imageData = NSData(contentsOfURL: nsurl) {
-                    image = UIImage(data: imageData)
-                    if image != nil {
-                        self.imageDataStore[urlPath] = image!
-                    }
-                } else {
-                    print("Image does not exist at \(urlPath)")
-                }
-            } else {
-                print("Invalid URL string: \(urlPath)")
+    func getImageForURLPath(urlString: String, completion_handler: (UIImage?) -> Void) {
+        
+        let time0 = NSDate()
+        getImageFromURLString(urlString) { webImage in
+            if let image = webImage {
+                self.imageDataStore[urlString] = image
             }
-            self.activityWheel.stopAnimating()
+            print("elapsedN: \(-time0.timeIntervalSinceNow)")
+            completion_handler(webImage)
         }
-        return image
     }
 }
