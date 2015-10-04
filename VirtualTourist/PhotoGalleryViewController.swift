@@ -27,7 +27,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         self.activityWheel.startAnimating()
-        getImagesFromFlickrForCoordinate((self.pinView.annotation?.coordinate)!) { urls, error in
+        FlickrAPI.getImagesFromFlickrForCoordinate((self.pinView.annotation?.coordinate)!) { urls, error in
             if let urls = urls {
                 print(urls[0])
                 self.imageURLs = urls
@@ -130,7 +130,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
     func getImageForURLPath(urlString: String, completion_handler: (UIImage?) -> Void) {
         
         let time0 = NSDate()
-        getImageFromURLString(urlString) { webImage in
+        FlickrAPI.getImageFromURLString(urlString) { webImage in
             if let image = webImage {
                 self.imageDataStore[urlString] = image
             }
