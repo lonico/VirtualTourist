@@ -21,13 +21,13 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
     var imageURLs: [(String?, String, String)]?
     var imageDataStore = [String:UIImage]()
     
+    // MARK: view life cycle
     override func viewDidLoad() {
-        super.viewDidLoad()
-    
-        // Do any additional setup after loading the view.
         
+        super.viewDidLoad()
+        // Do any additional setup after loading the view.
         self.activityWheel.startAnimating()
-        testme((self.pinView.annotation?.coordinate)!) { urls, error in
+        getImagesFromFlickrForCoordinate((self.pinView.annotation?.coordinate)!) { urls, error in
             if let urls = urls {
                 print(urls[0])
                 self.imageURLs = urls
@@ -47,6 +47,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
     }
 
     override func viewWillAppear(animated: Bool) {
+        
         navigationController?.navigationBarHidden = false
         viewIsActive = true
         //print(self.collectionView.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize))
@@ -55,18 +56,20 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
     }
     
     override func viewWillDisappear(animated: Bool) {
+        
         viewIsActive = false
     }
     override func didReceiveMemoryWarning() {
+        
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 
     // MARK: - Navigation
-
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
         let vc = segue.destinationViewController as! PhotoFullViewController
@@ -89,10 +92,12 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
     // MARK: CollectionView data source delegates
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
         return imageURLs?.count ?? 0
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("photoCell", forIndexPath: indexPath)
         let url = imageURLs?[indexPath.row]
         if url != nil {
@@ -121,6 +126,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
         return cell
     }
     
+    // TODO: revisit with codedata
     func getImageForURLPath(urlString: String, completion_handler: (UIImage?) -> Void) {
         
         let time0 = NSDate()

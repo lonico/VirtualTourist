@@ -14,6 +14,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     @IBOutlet var mapView: MKMapView!
 
     override func viewDidLoad() {
+        
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         if let region = MKCoordinateRegion.getSavedRegion() {
@@ -22,12 +23,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     override func viewWillAppear(animated: Bool) {
+        
         navigationController?.navigationBarHidden = true
         super.viewWillAppear(true)
     }
 
     // detect a long press and add a new pin
     @IBAction func longPressGesture(sender: UILongPressGestureRecognizer) {
+        
         if sender.state == UIGestureRecognizerState.Ended {
             let point = sender.locationInView(mapView)
             // CLLocationCoordinate2D(latitude: 40.738854666284, longitude: -105.455546187602)
@@ -61,6 +64,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     // This delegate method is implemented to respond to tapping a callout button.
     func mapView(mapView: MKMapView, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) -> Void {
+        
         print("Tapped")
         mapView.deselectAnnotation(annotationView.annotation, animated: true)
         let galleryVC = self.storyboard?.instantiateViewControllerWithIdentifier("photoGallery") as! PhotoGalleryViewController
@@ -70,6 +74,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     // This delegate method is implemented to respond to tapping a pin.
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        
         print("Selected")
         mapView.deselectAnnotation(view.annotation, animated: true)
         let galleryVC = self.storyboard?.instantiateViewControllerWithIdentifier("photoGallery") as! PhotoGalleryViewController
@@ -79,6 +84,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     // Delegate to respond to dragging a pin
     func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
+        
         if newState == .Ending {
             // title is read only.  We need to create a new annotation and 
             // replace the existing one
@@ -93,6 +99,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     // Delegate to respond to moving or zooming the map region
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        
         mapView.region.saveRegion()
     }
 }

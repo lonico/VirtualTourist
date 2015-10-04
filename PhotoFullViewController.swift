@@ -14,16 +14,19 @@ class PhotoFullViewController: UIViewController {
     var photoImage = UIImage?()
     
     override func viewWillAppear(animated: Bool) {
+        
         imageView.image = photoImage
         super.viewWillAppear(true)
     }
     
     // MARK: tap action
     @IBAction func tapGesture(sender: UITapGestureRecognizer) {
+        
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
     func refresh_image() {
+        
         imageView.image = photoImage
     }
 }

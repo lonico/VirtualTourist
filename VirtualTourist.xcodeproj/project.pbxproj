@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		C03F00E61BB7A672002BA7F3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03F00E51BB7A672002BA7F3 /* AppDelegate.swift */; };
-		C03F00E81BB7A672002BA7F3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03F00E71BB7A672002BA7F3 /* ViewController.swift */; };
 		C03F00EB1BB7A672002BA7F3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C03F00E91BB7A672002BA7F3 /* Main.storyboard */; };
 		C03F00EE1BB7A672002BA7F3 /* VirtualTourist.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C03F00EC1BB7A672002BA7F3 /* VirtualTourist.xcdatamodeld */; };
 		C03F00F01BB7A672002BA7F3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C03F00EF1BB7A672002BA7F3 /* Assets.xcassets */; };
@@ -43,7 +42,6 @@
 /* Begin PBXFileReference section */
 		C03F00E21BB7A672002BA7F3 /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C03F00E51BB7A672002BA7F3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		C03F00E71BB7A672002BA7F3 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		C03F00EA1BB7A672002BA7F3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C03F00ED1BB7A672002BA7F3 /* VirtualTourist.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VirtualTourist.xcdatamodel; sourceTree = "<group>"; };
 		C03F00EF1BB7A672002BA7F3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -112,7 +110,6 @@
 			isa = PBXGroup;
 			children = (
 				C03F00E51BB7A672002BA7F3 /* AppDelegate.swift */,
-				C03F00E71BB7A672002BA7F3 /* ViewController.swift */,
 				C0D426511BBBA46F00311C0F /* GeoExtensions.swift */,
 				C0D426531BBBA9D200311C0F /* FlickrAPIs.swift */,
 				C03F01161BB7A7D7002BA7F3 /* MapViewController.swift */,
@@ -276,7 +273,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C03F00E81BB7A672002BA7F3 /* ViewController.swift in Sources */,
 				C03F00E61BB7A672002BA7F3 /* AppDelegate.swift in Sources */,
 				C0D426501BBB889C00311C0F /* CollectionViewCell.swift in Sources */,
 				C0D426541BBBA9D200311C0F /* FlickrAPIs.swift in Sources */,

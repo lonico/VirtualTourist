@@ -19,7 +19,8 @@ let SAFE_SEARCH = "1"
 let DATA_FORMAT = "json"
 let NO_JSON_CALLBACK = "1"
 
-func testme(coordinate: CLLocationCoordinate2D, completion_handler: ([(String?, String, String)]?, String?) -> Void) {
+func getImagesFromFlickrForCoordinate(coordinate: CLLocationCoordinate2D, completion_handler: ([(String?, String, String)]?, String?) -> Void) {
+    
     let methodArguments = [
         "method": METHOD_NAME,
         "api_key": API_KEY,
@@ -146,22 +147,18 @@ func getImagesFromFlickrBySearchWithPage(methodArguments: [String : AnyObject], 
                     if let totalPhotos = photosDictionary["total"] as? String {
                         totalPhotosVal = (totalPhotos as NSString).integerValue
                     }
-                    
                     if totalPhotosVal > 0 {
                         if let photosArray = photosDictionary["photo"] as? [[String: AnyObject]] {
-                            
-                            // TODO:
-                            //let shuffledPics = GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(photosArray) as! [[String: AnyObject]]
-                            let shuffledPics = photosArray
+                            let shuffledPics = GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(photosArray) as! [[String: AnyObject]]
                             completion_handler(shuffledPics, nil)
                             
                         } else {
                             print("Cant find key 'photo' in \(photosDictionary)")
                         }
                     } else {
-                        dispatch_async(dispatch_get_main_queue(), {
+                        dispatch_async(dispatch_get_main_queue()) {
                             print("No Photos Found. Search Again.")
-                        })
+                        }
                     }
                 } else {
                     print("Cant find key 'photos' in \(parsedResult)")
@@ -201,19 +198,13 @@ func getImageFromURLString(urlString: String, completion_handler: (UIImage?) -> 
 func escapedParameters(parameters: [String : AnyObject]) -> String {
     
     var urlVars = [String]()
-    
     for (key, value) in parameters {
-        
         /* Make sure that it is a string value */
         let stringValue = "\(value)"
-        
         /* Escape it */
         let escapedValue = stringValue.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())
-        
         /* Append it */
         urlVars += [key + "=" + "\(escapedValue!)"]
-        
     }
-    
     return (!urlVars.isEmpty ? "?" : "") + urlVars.joinWithSeparator("&")
 }

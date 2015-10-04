@@ -8,6 +8,7 @@
 
 import MapKit
 
+// MARK: utility to convert coordinate to user friendly text string
 extension CLLocationCoordinate2D {
     
     // Service function, coordinate to String
@@ -36,12 +37,10 @@ extension CLLocationCoordinate2D {
         return String(format: "%.3f%@", value, suffix)
     }
     
-    
     enum Direction {
         case longitude
         case latitude
     }
-    
     
     struct LongitudeSuffix {
         static let positive = "E"
@@ -52,9 +51,9 @@ extension CLLocationCoordinate2D {
         static let positive = "N"
         static let negative = "S"
     }
-
 }
 
+//MARK: save and restore region to/from user defaults
 extension MKCoordinateRegion {
     
     struct RegionKeys {
