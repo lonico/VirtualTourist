@@ -16,6 +16,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var collectionView: UICollectionView!
     @IBOutlet var activityWheel: UIActivityIndicatorView!
+    var viewIsActive = false
     
     var imageURLs: [(String?, String, String)]?
     var imageDataStore = [String:UIImage]()
@@ -43,16 +44,19 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
         let region = MKCoordinateRegion(center: (pinView.annotation?.coordinate)!, span: span)
         mapView.setRegion(region, animated: true)
         mapView.addAnnotation(pinView.annotation!)
-        
     }
 
     override func viewWillAppear(animated: Bool) {
         navigationController?.navigationBarHidden = false
+        viewIsActive = true
         //print(self.collectionView.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize))
         //print(self.collectionView.systemLayoutSizeFittingSize(UILayoutFittingExpandedSize))
         //print(self.collectionView.intrinsicContentSize())
     }
     
+    override func viewWillDisappear(animated: Bool) {
+        viewIsActive = false
+    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -79,6 +83,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
         } else {
             vc.photoImage = image
         }
+        viewIsActive = false
     }
 
     // MARK: CollectionView data source delegates
@@ -100,11 +105,9 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
                         (cell as! CollectionViewCell).url_m = url!.2
                         dispatch_async(dispatch_get_main_queue()) {
                             
-                            let section = indexPath.section
-                            if (collectionView.numberOfSections() > 0 && collectionView.numberOfItemsInSection(section) > 0 && collectionView.indexPathsForVisibleItems().contains(indexPath)) {
-                                // TODO: reloadData generates too many requests
-                                //collectionView.reloadData()
-                                // reloadItemsAtIndexPaths crashed if the view goes out of focus
+                            if (self.viewIsActive && collectionView.indexPathsForVisibleItems().contains(indexPath)) {
+                                // reloadData generates too many requests
+                                // reloadItemsAtIndexPaths crashed if the view goes out of focus, hence the viewIsActive
                                 collectionView.reloadItemsAtIndexPaths([indexPath])
                             }
                         }
