@@ -13,7 +13,7 @@ import MapKit
 
 struct FlickrAPI {
     
-    struct ArgKeys {
+    struct ArgValues {
         static let BASE_URL = "https://api.flickr.com/services/rest/"
         static let METHOD_NAME = "flickr.photos.search"
         static let API_KEY = "47ab5778cf6752cd2eb7339c04b48d6d"
@@ -25,25 +25,19 @@ struct FlickrAPI {
     
     static func getImagesFromFlickrForCoordinate(coordinate: CLLocationCoordinate2D, completion_handler: ([(String?, String, String)]?, String?) -> Void) {
         
-        let methodArguments = [
-            "method": ArgKeys.METHOD_NAME,
-            "api_key": ArgKeys.API_KEY,
+        let searchMethodArguments = [
             "bbox": FlickrAPI.createBoundingBoxString(coordinate),
-            "safe_search": ArgKeys.SAFE_SEARCH,
-            "extras": ArgKeys.EXTRAS,
-            "format": ArgKeys.DATA_FORMAT,
-            "nojsoncallback": ArgKeys.NO_JSON_CALLBACK
         ]
         
-        FlickrAPI.getImagesFromFlickrBySearch(methodArguments) { photos, error in
+        FlickrAPI.getImagesFromFlickrBySearch(searchMethodArguments) { photos, error in
             if let error = error {
                 print("Error in getImagesFromFlickrBySearch: \(error)")
                 completion_handler(nil, error)
-            } else {
-                print(photos?.count)
+            } else if let photos = photos {
+                print(photos.count)
                 var imageURLs = [(String?, String, String)]()
                 var i = 0
-                for photo in photos! {
+                for photo in photos {
                     let photoDictionary = photo //as [String: AnyObject]
                     
                     let photoTitle = photoDictionary["title"] as? String
@@ -58,6 +52,10 @@ struct FlickrAPI {
                     }
                 }
                 completion_handler(imageURLs, nil)
+            } else {
+                let error = "No picture found"
+                print(error)
+                completion_handler(nil, error)
             }
         }
     }
@@ -86,16 +84,28 @@ struct FlickrAPI {
     /* Function makes first request to get a random page, then it makes a request to get all images from the random page */
     /* Images are shuffled in randam order */
     static func getImagesFromFlickrBySearch(methodArguments: [String : AnyObject], completion_handler: ([[String: AnyObject]]?, String?) -> Void) {
+
+        let urlString = ArgValues.BASE_URL
+        var searchMethodArguments = [
+            "method": ArgValues.METHOD_NAME,
+            "api_key": ArgValues.API_KEY,
+            "safe_search": ArgValues.SAFE_SEARCH,
+            "format": ArgValues.DATA_FORMAT,
+            "nojsoncallback": ArgValues.NO_JSON_CALLBACK
+        ] as [String : AnyObject]
         
-        let session = NSURLSession.sharedSession()
-        let urlString = ArgKeys.BASE_URL + FlickrAPI.escapedParameters(methodArguments)
-        let url = NSURL(string: urlString)!
-        let request = NSURLRequest(URL: url)
-        let task = session.dataTaskWithRequest(request) { data, response, downloadError in
-            if let error = downloadError {
+        for (key, value) in methodArguments {
+            searchMethodArguments[key] = value
+        }
+    
+        HttpRequest.sharedInstance().sendGetRequest(urlString, methodArguments: searchMethodArguments) { data, error in
+            
+            var photosDict: [[String: AnyObject]]? = nil
+            var errorStr: String? = nil
+            if let error = error {
                 print("Could not complete the request \(error)")
+                errorStr = "Could not complete the request \(error)"
             } else {
-                
                 do {
                     let parsedResult = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments) as! NSDictionary
                     if let photosDictionary = parsedResult.valueForKey("photos") as? [String:AnyObject] {
@@ -103,38 +113,52 @@ struct FlickrAPI {
                             /* Flickr API - will only return up the 4000 images (100 per page * 40 page max) */
                             let pageLimit = min(totalPages, 40)
                             let randomPage = Int(arc4random_uniform(UInt32(pageLimit))) + 1
-                            FlickrAPI.getImagesFromFlickrBySearchWithPage(methodArguments, pageNumber: randomPage) { photos, error in
-                                completion_handler(photos, error)
+                            FlickrAPI.getImagesFromFlickrBySearchWithPage(searchMethodArguments, pageNumber: randomPage) { photos, error in
+                                
+                                if let error = error {
+                                    print("Could not complete the request \(error)")
+                                    errorStr = "Could not complete the request \(error)"
+                                } else if let photos = photos {
+                                    photosDict = photos
+                                } else {
+                                    print("No data, and not error!")
+                                    errorStr = "No data, and not error!"
+                                }
+                                completion_handler(photosDict, errorStr)
                             }
                         } else {
-                            print("Cant find key 'pages' in \(photosDictionary)")
+                            print("Can't find key 'pages' in \(photosDictionary)")
+                            errorStr = "Cant find key 'pages' in \(photosDictionary)"
+                            completion_handler(photosDict, errorStr)
                         }
                     } else {
-                        print("Cant find key 'photos' in \(parsedResult)")
+                        print("Can't find key 'photos' in \(parsedResult)")
+                        errorStr = "Can't find key 'photos' in \(parsedResult)"
+                        completion_handler(photosDict, errorStr)
                     }
                 } catch let error as NSError {
                     print("Failed to parse results: \(error.localizedDescription)")
+                    errorStr = "Failed to parse results: \(error.localizedDescription)"
+                    completion_handler(photosDict, errorStr)
                 }
             }
         }
-        
-        task.resume()
     }
     
     static func getImagesFromFlickrBySearchWithPage(methodArguments: [String : AnyObject], pageNumber: Int, completion_handler: ([[String: AnyObject]]?, String?) -> Void) {
         
         /* Add the page to the method's arguments */
-        var withPageDictionary = methodArguments
-        withPageDictionary["page"] = pageNumber
-        
-        let session = NSURLSession.sharedSession()
-        let urlString = ArgKeys.BASE_URL + FlickrAPI.escapedParameters(withPageDictionary)
-        let url = NSURL(string: urlString)!
-        let request = NSURLRequest(URL: url)
-        
-        let task = session.dataTaskWithRequest(request) { data, response, downloadError in
-            if let error = downloadError {
+        var argDictionary = methodArguments
+        argDictionary["page"] = pageNumber
+        argDictionary["extras"] = ArgValues.EXTRAS
+        let urlString = ArgValues.BASE_URL
+        HttpRequest.sharedInstance().sendGetRequest(urlString, methodArguments: argDictionary) { data, error in
+
+            var shuffledPics: [[String: AnyObject]]? = nil
+            var errorStr: String? = nil
+            if let error = error {
                 print("Could not complete the request \(error)")
+                errorStr = "Could not complete the request \(error)"
             } else {
                 do {
                     let parsedResult = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments) as! NSDictionary
@@ -145,64 +169,44 @@ struct FlickrAPI {
                         }
                         if totalPhotosVal > 0 {
                             if let photosArray = photosDictionary["photo"] as? [[String: AnyObject]] {
-                                let shuffledPics = GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(photosArray) as! [[String: AnyObject]]
-                                completion_handler(shuffledPics, nil)
-                                
+                                print("found photos")
+                                shuffledPics = GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(photosArray) as? [[String: AnyObject]]
                             } else {
                                 print("Cant find key 'photo' in \(photosDictionary)")
+                                errorStr = "Cant find key 'photo' in \(photosDictionary)"
                             }
                         } else {
-                            dispatch_async(dispatch_get_main_queue()) {
-                                print("No Photos Found. Search Again.")
-                            }
+                            print("No Photos Found. Search Again.")
+                            errorStr = "No Photos Found. Search Again."
                         }
                     } else {
-                        print("Cant find key 'photos' in \(parsedResult)")
+                        print("Can't find key 'photos' in \(parsedResult)")
+                        errorStr = "Cant find key 'photos' in \(parsedResult)"
                     }
                 } catch let error as NSError {
                     print("Failed to parse results: \(error.localizedDescription)")
+                    errorStr = "Failed to parse results: \(error.localizedDescription)"
                 }
             }
+            completion_handler(shuffledPics, errorStr)
         }
-        
-        task.resume()
     }
     
     static func getImageFromURLString(urlString: String, completion_handler: (UIImage?) -> Void) {
         
-        let session = NSURLSession.sharedSession()
-        let url = NSURL(string: urlString)!
-        let request = NSURLRequest(URL: url)
         var image: UIImage? = nil
         
-        let task = session.dataTaskWithRequest(request) { data, response, downloadError in
-            if let error = downloadError {
+        HttpRequest.sharedInstance().sendGetRequest(urlString, methodArguments: nil) { data, error in
+            if let error = error {
                 print("Could not complete the request \(error.localizedDescription)")
             } else {
                 if let imageData = data {
                     image = UIImage(data: imageData)
                 } else {
-                    print("No data: \(response?.description)")
+                    print("No data for: \(urlString)")
                 }
             }
             completion_handler(image)
         }
-        task.resume()
     }
-    
-    /* Helper function: Given a dictionary of parameters, convert to a string for a url */
-    static func escapedParameters(parameters: [String : AnyObject]) -> String {
-        
-        var urlVars = [String]()
-        for (key, value) in parameters {
-            /* Make sure that it is a string value */
-            let stringValue = "\(value)"
-            /* Escape it */
-            let escapedValue = stringValue.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())
-            /* Append it */
-            urlVars += [key + "=" + "\(escapedValue!)"]
-        }
-        return (!urlVars.isEmpty ? "?" : "") + urlVars.joinWithSeparator("&")
-    }
-    
 }
