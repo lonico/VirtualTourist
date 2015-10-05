@@ -103,8 +103,8 @@ struct FlickrAPI {
             var photosDict: [[String: AnyObject]]? = nil
             var errorStr: String? = nil
             if let error = error {
-                print("Could not complete the request \(error)")
                 errorStr = "Could not complete the request \(error)"
+                print(errorStr)
             } else {
                 do {
                     let parsedResult = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments) as! NSDictionary
@@ -116,29 +116,29 @@ struct FlickrAPI {
                             FlickrAPI.getImagesFromFlickrBySearchWithPage(searchMethodArguments, pageNumber: randomPage) { photos, error in
                                 
                                 if let error = error {
-                                    print("Could not complete the request \(error)")
                                     errorStr = "Could not complete the request \(error)"
+                                    print(errorStr)
                                 } else if let photos = photos {
                                     photosDict = photos
                                 } else {
-                                    print("No data, and not error!")
                                     errorStr = "No data, and not error!"
+                                    print(errorStr)
                                 }
                                 completion_handler(photosDict, errorStr)
                             }
                         } else {
-                            print("Can't find key 'pages' in \(photosDictionary)")
                             errorStr = "Cant find key 'pages' in \(photosDictionary)"
+                            print(errorStr)
                             completion_handler(photosDict, errorStr)
                         }
                     } else {
-                        print("Can't find key 'photos' in \(parsedResult)")
                         errorStr = "Can't find key 'photos' in \(parsedResult)"
+                        print(errorStr)
                         completion_handler(photosDict, errorStr)
                     }
                 } catch let error as NSError {
-                    print("Failed to parse results: \(error.localizedDescription)")
                     errorStr = "Failed to parse results: \(error.localizedDescription)"
+                    print(errorStr)
                     completion_handler(photosDict, errorStr)
                 }
             }
@@ -157,8 +157,8 @@ struct FlickrAPI {
             var shuffledPics: [[String: AnyObject]]? = nil
             var errorStr: String? = nil
             if let error = error {
-                print("Could not complete the request \(error)")
                 errorStr = "Could not complete the request \(error)"
+                print(errorStr)
             } else {
                 do {
                     let parsedResult = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments) as! NSDictionary
@@ -169,44 +169,46 @@ struct FlickrAPI {
                         }
                         if totalPhotosVal > 0 {
                             if let photosArray = photosDictionary["photo"] as? [[String: AnyObject]] {
-                                print("found photos")
                                 shuffledPics = GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(photosArray) as? [[String: AnyObject]]
                             } else {
-                                print("Cant find key 'photo' in \(photosDictionary)")
                                 errorStr = "Cant find key 'photo' in \(photosDictionary)"
+                                print(errorStr)
                             }
                         } else {
-                            print("No Photos Found. Search Again.")
                             errorStr = "No Photos Found. Search Again."
+                            print(errorStr)
                         }
                     } else {
-                        print("Can't find key 'photos' in \(parsedResult)")
-                        errorStr = "Cant find key 'photos' in \(parsedResult)"
+                        errorStr = "Can't find key 'photos' in \(parsedResult)"
+                        print(errorStr)
                     }
                 } catch let error as NSError {
-                    print("Failed to parse results: \(error.localizedDescription)")
                     errorStr = "Failed to parse results: \(error.localizedDescription)"
+                    print(errorStr)
                 }
             }
             completion_handler(shuffledPics, errorStr)
         }
     }
     
-    static func getImageFromURLString(urlString: String, completion_handler: (UIImage?) -> Void) {
-        
-        var image: UIImage? = nil
+    static func getImageFromURLString(urlString: String, completion_handler: (UIImage?, String?) -> Void) {
         
         HttpRequest.sharedInstance().sendGetRequest(urlString, methodArguments: nil) { data, error in
+            
+            var image: UIImage? = nil
+            var errorStr: String? = nil
             if let error = error {
-                print("Could not complete the request \(error.localizedDescription)")
+                errorStr = "Could not complete the request \(error.localizedDescription)"
+                print(errorStr)
             } else {
                 if let imageData = data {
                     image = UIImage(data: imageData)
                 } else {
-                    print("No data for: \(urlString)")
+                    errorStr = "No data for: \(urlString)"
+                    print(errorStr)
                 }
             }
-            completion_handler(image)
+            completion_handler(image, errorStr)
         }
     }
 }

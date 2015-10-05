@@ -130,9 +130,11 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
     func getImageForURLPath(urlString: String, completion_handler: (UIImage?) -> Void) {
         
         let time0 = NSDate()
-        FlickrAPI.getImageFromURLString(urlString) { webImage in
+        FlickrAPI.getImageFromURLString(urlString) { webImage, errorStr in
             if let image = webImage {
                 self.imageDataStore[urlString] = image
+            } else {
+                //TODO: AlertController.Alert(msg: errorStr, title: "")
             }
             print("elapsedN: \(-time0.timeIntervalSinceNow)")
             completion_handler(webImage)
