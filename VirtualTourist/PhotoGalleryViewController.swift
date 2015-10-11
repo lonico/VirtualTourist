@@ -16,23 +16,39 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var collectionView: UICollectionView!
     @IBOutlet var activityWheel: UIActivityIndicatorView!
+    @IBOutlet var noImageLabel: UILabel!
     var viewIsActive = false
     
     var imageURLs: [(String?, String, String)]?
     var imageDataStore = [String:UIImage]()
+    
+    var defaultImage: UIImage? = nil
     
     // MARK: view life cycle
     override func viewDidLoad() {
         
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        self.noImageLabel.hidden = true
         self.activityWheel.startAnimating()
+        
+        if defaultImage == nil {
+            defaultImage = UIImage(named: "VirtualTourist_120")
+        }
+        
         FlickrAPI.getImagesFromFlickrForCoordinate((self.pinView.annotation?.coordinate)!) { urls, errorStr in
             if let urls = urls {
                 self.imageURLs = urls
-                dispatch_async(dispatch_get_main_queue()) {
-                    self.activityWheel.stopAnimating()
-                    self.collectionView.reloadData()
+                if urls.count == 0 {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.noImageLabel.hidden = false
+                        self.activityWheel.stopAnimating()
+                    }
+                } else {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.activityWheel.stopAnimating()
+                        self.collectionView.reloadData()
+                    }
                 }
             } else {
                 let alert = AlertController.Alert(msg: errorStr, title: AlertController.AlertTitle.OpenURLError) { action in
@@ -112,6 +128,8 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
             let url_t = url!.1
             let image = imageDataStore[url_t]
             if image == nil {
+                (cell as! CollectionViewCell).image.image = defaultImage
+                (cell as! CollectionViewCell).url_m = nil
                 getImageForURLPath(url_t) { image, errorStr in
                     if image != nil {
                         (cell as! CollectionViewCell).image.image = image

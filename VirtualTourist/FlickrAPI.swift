@@ -171,8 +171,8 @@ struct FlickrAPI {
                                 print(errorStr)
                             }
                         } else {
-                            errorStr = "No Photos Found. Search Again."
-                            print(errorStr)
+                            shuffledPics = []
+                            print(">>> No photo")
                         }
                     } else {
                         errorStr = "Can't find key 'photos' in \(parsedResult)"

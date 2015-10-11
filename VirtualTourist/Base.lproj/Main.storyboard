@@ -152,6 +152,13 @@
                                 <animations/>
                                 <color key="color" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             </activityIndicatorView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No image found for this location" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nzU-1S-345">
+                                <rect key="frame" x="178" y="290" width="244" height="21"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -159,7 +166,9 @@
                             <constraint firstItem="m8V-bM-d4Z" firstAttribute="leading" secondItem="5MR-76-MsM" secondAttribute="leadingMargin" constant="-20" id="ADu-zS-jcV"/>
                             <constraint firstItem="m8V-bM-d4Z" firstAttribute="top" secondItem="owN-lx-bYy" secondAttribute="bottom" id="CYR-UN-NOT"/>
                             <constraint firstItem="duP-1W-0Lt" firstAttribute="top" secondItem="m8V-bM-d4Z" secondAttribute="bottom" id="IRL-wL-i86"/>
+                            <constraint firstItem="nzU-1S-345" firstAttribute="centerX" secondItem="5MR-76-MsM" secondAttribute="centerX" id="R2a-HP-yHk"/>
                             <constraint firstAttribute="trailingMargin" secondItem="duP-1W-0Lt" secondAttribute="trailing" constant="-20" id="RuI-HH-1dX"/>
+                            <constraint firstItem="nzU-1S-345" firstAttribute="centerY" secondItem="5MR-76-MsM" secondAttribute="centerY" id="cbD-dO-5M9"/>
                             <constraint firstAttribute="trailingMargin" secondItem="m8V-bM-d4Z" secondAttribute="trailing" constant="-20" id="dwC-bN-i6q"/>
                             <constraint firstItem="Tsj-Ip-hx4" firstAttribute="top" secondItem="duP-1W-0Lt" secondAttribute="bottom" id="dzC-tq-wPa"/>
                             <constraint firstItem="OJc-XO-YEt" firstAttribute="centerX" secondItem="duP-1W-0Lt" secondAttribute="centerX" id="l1B-xH-0cU"/>
@@ -174,6 +183,7 @@
                         <outlet property="activityWheel" destination="OJc-XO-YEt" id="4wH-Ii-saS"/>
                         <outlet property="collectionView" destination="duP-1W-0Lt" id="SRw-ii-dIK"/>
                         <outlet property="mapView" destination="m8V-bM-d4Z" id="QB9-S6-3m2"/>
+                        <outlet property="noImageLabel" destination="nzU-1S-345" id="W0k-7H-wuN"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Yzf-Bf-Xt5" userLabel="First Responder" sceneMemberID="firstResponder"/>
