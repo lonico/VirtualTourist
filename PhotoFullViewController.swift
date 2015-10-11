@@ -11,11 +11,14 @@ import UIKit
 class PhotoFullViewController: UIViewController {
     
     @IBOutlet var imageView: UIImageView!
+    @IBOutlet var activityIndicator: UIActivityIndicatorView!
     var photoImage = UIImage?()
     
     override func viewWillAppear(animated: Bool) {
         
-        imageView.image = photoImage
+        if photoImage != nil {
+            refresh_image()
+        }
         super.viewWillAppear(true)
     }
     
@@ -27,6 +30,7 @@ class PhotoFullViewController: UIViewController {
     
     func refresh_image() {
         
+        activityIndicator.stopAnimating()
         imageView.image = photoImage
     }
 }

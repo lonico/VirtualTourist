@@ -75,7 +75,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     // This delegate method is implemented to respond to tapping a pin.
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         
-        print("Selected")
         mapView.deselectAnnotation(view.annotation, animated: true)
         let galleryVC = self.storyboard?.instantiateViewControllerWithIdentifier("photoGallery") as! PhotoGalleryViewController
         galleryVC.pinView = view

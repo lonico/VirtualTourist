@@ -103,8 +103,9 @@ struct FlickrAPI {
             var photosDict: [[String: AnyObject]]? = nil
             var errorStr: String? = nil
             if let error = error {
-                errorStr = "Could not complete the request \(error)"
+                errorStr = "Could not complete the request:\n \(error.localizedDescription)"
                 print(errorStr)
+                completion_handler(photosDict, errorStr)
             } else {
                 do {
                     let parsedResult = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments) as! NSDictionary
@@ -116,12 +117,12 @@ struct FlickrAPI {
                             FlickrAPI.getImagesFromFlickrBySearchWithPage(searchMethodArguments, pageNumber: randomPage) { photos, error in
                                 
                                 if let error = error {
-                                    errorStr = "Could not complete the request \(error)"
+                                    errorStr = "Could not complete the request:\n \(error)"
                                     print(errorStr)
                                 } else if let photos = photos {
                                     photosDict = photos
                                 } else {
-                                    errorStr = "No data, and not error!"
+                                    errorStr = "No data, and no error!"
                                     print(errorStr)
                                 }
                                 completion_handler(photosDict, errorStr)
@@ -198,7 +199,7 @@ struct FlickrAPI {
             var image: UIImage? = nil
             var errorStr: String? = nil
             if let error = error {
-                errorStr = "Could not complete the request \(error.localizedDescription)"
+                errorStr = "Could not complete the request:\n \(error.localizedDescription)"
                 print(errorStr)
             } else {
                 if let imageData = data {

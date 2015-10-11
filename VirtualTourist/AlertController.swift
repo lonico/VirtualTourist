@@ -42,8 +42,11 @@ struct AlertController {
         
         func dispatchAlert(vc: UIViewController) -> Void {
             
-            dispatch_async(dispatch_get_main_queue()) {
-            self.showAlert(vc)
+            // Only show the alert if the VC is still active, and not presenting another VC
+            if vc.isViewLoaded() && vc.view.window != nil && vc.presentedViewController == nil {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.showAlert(vc)
+                }
             }
         }
     }

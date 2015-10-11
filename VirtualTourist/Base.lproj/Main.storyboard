@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="14F1012" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="ugf-mh-DS3">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="15A284" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="ugf-mh-DS3">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -19,6 +19,7 @@
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="JmU-m7-Cr3">
                                 <rect key="frame" x="0.0" y="44" width="600" height="556"/>
+                                <animations/>
                                 <gestureRecognizers/>
                                 <connections>
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="YUT-J7-yEY"/>
@@ -26,6 +27,7 @@
                                 </connections>
                             </mapView>
                         </subviews>
+                        <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="JmU-m7-Cr3" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="VjZ-zm-bVN"/>
@@ -58,6 +60,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="EhB-8V-T0c">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <animations/>
                     </navigationBar>
                     <connections>
                         <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="DSe-jw-82p"/>
@@ -81,12 +84,14 @@
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="m8V-bM-d4Z">
                                 <rect key="frame" x="0.0" y="20" width="600" height="120"/>
+                                <animations/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="120" id="25b-E1-K33"/>
                                 </constraints>
                             </mapView>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="duP-1W-0Lt">
                                 <rect key="frame" x="0.0" y="140" width="600" height="460"/>
+                                <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="5" minimumInteritemSpacing="5" id="6Xy-Md-Sa6">
                                     <size key="itemSize" width="120" height="120"/>
@@ -104,19 +109,23 @@
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="EUk-1S-L3U">
                                                     <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
+                                                    <animations/>
                                                 </imageView>
                                                 <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QfC-TE-4hY">
                                                     <rect key="frame" x="13" y="91" width="94" height="21"/>
+                                                    <animations/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="21" id="ViC-1q-1xX"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
+                                            <animations/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
+                                        <animations/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="trailingMargin" secondItem="QfC-TE-4hY" secondAttribute="trailing" constant="5" id="0Qt-gW-qDX"/>
@@ -140,9 +149,11 @@
                             </collectionView>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="OJc-XO-YEt">
                                 <rect key="frame" x="281" y="352" width="37" height="37"/>
+                                <animations/>
                                 <color key="color" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             </activityIndicatorView>
                         </subviews>
+                        <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="m8V-bM-d4Z" firstAttribute="leading" secondItem="5MR-76-MsM" secondAttribute="leadingMargin" constant="-20" id="ADu-zS-jcV"/>
@@ -183,21 +194,31 @@
                         <subviews>
                             <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="kVX-c0-nZH">
                                 <rect key="frame" x="20" y="20" width="560" height="580"/>
+                                <animations/>
                                 <gestureRecognizers/>
                                 <connections>
                                     <outletCollection property="gestureRecognizers" destination="wnh-oi-zmB" appends="YES" id="mYa-dq-b7y"/>
                                 </connections>
                             </imageView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="cd7-Nu-MLX">
+                                <rect key="frame" x="282" y="291" width="37" height="37"/>
+                                <animations/>
+                                <color key="color" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            </activityIndicatorView>
                         </subviews>
+                        <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="kVX-c0-nZH" firstAttribute="leading" secondItem="GdA-4g-wcX" secondAttribute="leadingMargin" id="8cY-zH-oX2"/>
+                            <constraint firstItem="cd7-Nu-MLX" firstAttribute="centerX" secondItem="kVX-c0-nZH" secondAttribute="centerX" id="9FV-jM-ix2"/>
                             <constraint firstItem="kVX-c0-nZH" firstAttribute="top" secondItem="knO-a3-u5M" secondAttribute="bottom" id="LVh-r0-VRD"/>
                             <constraint firstItem="iyc-tQ-dLM" firstAttribute="top" secondItem="kVX-c0-nZH" secondAttribute="bottom" id="Nge-8c-wy5"/>
+                            <constraint firstItem="cd7-Nu-MLX" firstAttribute="centerY" secondItem="kVX-c0-nZH" secondAttribute="centerY" id="SsR-mM-Xdv"/>
                             <constraint firstAttribute="trailingMargin" secondItem="kVX-c0-nZH" secondAttribute="trailing" id="XxY-Ud-NiP"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="cd7-Nu-MLX" id="ior-TZ-skb"/>
                         <outlet property="imageView" destination="kVX-c0-nZH" id="7SG-Ma-U82"/>
                     </connections>
                 </viewController>

@@ -27,17 +27,22 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         self.activityWheel.startAnimating()
-        FlickrAPI.getImagesFromFlickrForCoordinate((self.pinView.annotation?.coordinate)!) { urls, error in
+        FlickrAPI.getImagesFromFlickrForCoordinate((self.pinView.annotation?.coordinate)!) { urls, errorStr in
             if let urls = urls {
+                print("processing urls")
                 print(urls[0])
                 self.imageURLs = urls
                 dispatch_async(dispatch_get_main_queue()) {
                     self.activityWheel.stopAnimating()
                     print("loading data")
-                    let time0 = NSDate()
                     self.collectionView.reloadData()
-                    print("elapsed reloadData: \(-time0.timeIntervalSinceNow)")
                 }
+            } else {
+                print("alertcontroller")
+                let alert = AlertController.Alert(msg: errorStr, title: AlertController.AlertTitle.OpenURLError) { action in
+                    self.activityWheel.stopAnimating()
+                }
+                alert.dispatchAlert(self)
             }
         }
         
@@ -50,15 +55,14 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
         
         navigationController?.navigationBarHidden = false
         viewIsActive = true
-        //print(self.collectionView.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize))
-        //print(self.collectionView.systemLayoutSizeFittingSize(UILayoutFittingExpandedSize))
-        //print(self.collectionView.intrinsicContentSize())
     }
     
     override func viewWillDisappear(animated: Bool) {
         
         viewIsActive = false
+        super.viewWillDisappear(animated)
     }
+    
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
@@ -77,10 +81,18 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
         let url_m = cell.url_m
         let image = imageDataStore[url_m]
         if image == nil {
-            getImageForURLPath(url_m) { image in
-                dispatch_async(dispatch_get_main_queue()) {
-                    vc.photoImage = image
-                    vc.refresh_image()
+            getImageForURLPath(url_m) { image, errorStr in
+                
+                if image != nil {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        vc.photoImage = image
+                        vc.refresh_image()
+                    }
+                } else {
+                    let alert = AlertController.Alert(msg: errorStr, title: AlertController.AlertTitle.OpenURLError) { action in
+                        vc.dismissViewControllerAnimated(true, completion: nil)
+                    }
+                    alert.dispatchAlert(vc)
                 }
             }
         } else {
@@ -104,7 +116,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
             let url_t = url!.1
             let image = imageDataStore[url_t]
             if image == nil {
-                getImageForURLPath(url_t) { image in
+                getImageForURLPath(url_t) { image, errorStr in
                     if image != nil {
                         (cell as! CollectionViewCell).image.image = image
                         (cell as! CollectionViewCell).url_m = url!.2
@@ -116,6 +128,8 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
                                 collectionView.reloadItemsAtIndexPaths([indexPath])
                             }
                         }
+                    } else {
+                        AlertController.Alert(msg: errorStr, title: AlertController.AlertTitle.OpenURLError).dispatchAlert(self)
                     }
                 }
             } else {
@@ -127,17 +141,13 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
     }
     
     // TODO: revisit with codedata
-    func getImageForURLPath(urlString: String, completion_handler: (UIImage?) -> Void) {
+    func getImageForURLPath(urlString: String, completion_handler: (UIImage?, String?) -> Void) {
         
-        let time0 = NSDate()
         FlickrAPI.getImageFromURLString(urlString) { webImage, errorStr in
             if let image = webImage {
                 self.imageDataStore[urlString] = image
-            } else {
-                //TODO: AlertController.Alert(msg: errorStr, title: "")
             }
-            print("elapsedN: \(-time0.timeIntervalSinceNow)")
-            completion_handler(webImage)
+            completion_handler(webImage, errorStr)
         }
     }
 }
