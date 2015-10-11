@@ -30,13 +30,12 @@ struct FlickrAPI {
         ]
         
         FlickrAPI.getImagesFromFlickrBySearch(searchMethodArguments) { photos, error in
-            if let error = error {
-                print("Error in getImagesFromFlickrBySearch: \(error)")
-                completion_handler(nil, error)
+            if let errorStr = error {
+                print("Error in getImagesFromFlickrBySearch: \(errorStr)")
+                completion_handler(nil, errorStr)
             } else if let photos = photos {
-                print(photos.count)
+                print(photos.count) // TODO:
                 var imageURLs = [(String?, String, String)]()
-                var i = 0
                 for photo in photos {
                     let photoDictionary = photo //as [String: AnyObject]
                     
@@ -44,18 +43,14 @@ struct FlickrAPI {
                     if let imageUrlTString = photoDictionary["url_t"] as? String {
                         if let imageUrlMString = photoDictionary["url_m"] as? String {
                             imageURLs.append((photoTitle, imageUrlTString, imageUrlMString))
-                            if i < 3 {
-                                print(photoTitle)
-                                i++
-                            }
                         }
                     }
                 }
                 completion_handler(imageURLs, nil)
             } else {
-                let error = "No picture found"
-                print(error)
-                completion_handler(nil, error)
+                let errorStr = "No picture found"
+                print(errorStr)
+                completion_handler(nil, errorStr)
             }
         }
     }

@@ -29,16 +29,12 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
         self.activityWheel.startAnimating()
         FlickrAPI.getImagesFromFlickrForCoordinate((self.pinView.annotation?.coordinate)!) { urls, errorStr in
             if let urls = urls {
-                print("processing urls")
-                print(urls[0])
                 self.imageURLs = urls
                 dispatch_async(dispatch_get_main_queue()) {
                     self.activityWheel.stopAnimating()
-                    print("loading data")
                     self.collectionView.reloadData()
                 }
             } else {
-                print("alertcontroller")
                 let alert = AlertController.Alert(msg: errorStr, title: AlertController.AlertTitle.OpenURLError) { action in
                     self.activityWheel.stopAnimating()
                 }
