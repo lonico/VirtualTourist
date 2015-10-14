@@ -90,7 +90,7 @@
                                 </constraints>
                             </mapView>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="duP-1W-0Lt">
-                                <rect key="frame" x="0.0" y="140" width="600" height="460"/>
+                                <rect key="frame" x="0.0" y="140" width="600" height="430"/>
                                 <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="5" minimumInteritemSpacing="5" id="6Xy-Md-Sa6">
@@ -148,7 +148,7 @@
                                 </connections>
                             </collectionView>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="OJc-XO-YEt">
-                                <rect key="frame" x="281" y="352" width="37" height="37"/>
+                                <rect key="frame" x="281" y="337" width="37" height="37"/>
                                 <animations/>
                                 <color key="color" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             </activityIndicatorView>
@@ -159,6 +159,17 @@
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rEd-F7-dIT">
+                                <rect key="frame" x="248" y="570" width="104" height="30"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="Ngi-Ye-0UG"/>
+                                </constraints>
+                                <state key="normal" title="New Collection"/>
+                                <connections>
+                                    <action selector="newCollectionActionTouchUp:" destination="aK1-Sr-9xG" eventType="touchUpInside" id="eW4-ja-eHK"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -168,13 +179,21 @@
                             <constraint firstItem="duP-1W-0Lt" firstAttribute="top" secondItem="m8V-bM-d4Z" secondAttribute="bottom" id="IRL-wL-i86"/>
                             <constraint firstItem="nzU-1S-345" firstAttribute="centerX" secondItem="5MR-76-MsM" secondAttribute="centerX" id="R2a-HP-yHk"/>
                             <constraint firstAttribute="trailingMargin" secondItem="duP-1W-0Lt" secondAttribute="trailing" constant="-20" id="RuI-HH-1dX"/>
+                            <constraint firstItem="Tsj-Ip-hx4" firstAttribute="top" secondItem="rEd-F7-dIT" secondAttribute="bottom" id="T5j-LS-Sde"/>
+                            <constraint firstItem="rEd-F7-dIT" firstAttribute="top" secondItem="duP-1W-0Lt" secondAttribute="bottom" id="Zze-ua-3xj"/>
                             <constraint firstItem="nzU-1S-345" firstAttribute="centerY" secondItem="5MR-76-MsM" secondAttribute="centerY" id="cbD-dO-5M9"/>
                             <constraint firstAttribute="trailingMargin" secondItem="m8V-bM-d4Z" secondAttribute="trailing" constant="-20" id="dwC-bN-i6q"/>
                             <constraint firstItem="Tsj-Ip-hx4" firstAttribute="top" secondItem="duP-1W-0Lt" secondAttribute="bottom" id="dzC-tq-wPa"/>
                             <constraint firstItem="OJc-XO-YEt" firstAttribute="centerX" secondItem="duP-1W-0Lt" secondAttribute="centerX" id="l1B-xH-0cU"/>
+                            <constraint firstItem="rEd-F7-dIT" firstAttribute="centerX" secondItem="5MR-76-MsM" secondAttribute="centerX" id="xVk-SU-VjL"/>
                             <constraint firstItem="OJc-XO-YEt" firstAttribute="centerY" secondItem="duP-1W-0Lt" secondAttribute="centerY" id="xvd-fo-Kd2"/>
                             <constraint firstItem="duP-1W-0Lt" firstAttribute="leading" secondItem="5MR-76-MsM" secondAttribute="leadingMargin" constant="-20" id="zaZ-b5-Rbk"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="dzC-tq-wPa"/>
+                            </mask>
+                        </variation>
                     </view>
                     <navigationItem key="navigationItem" id="nCB-KB-hyL">
                         <barButtonItem key="backBarButtonItem" title="OK" id="Ejm-B1-wsL"/>
@@ -183,6 +202,7 @@
                         <outlet property="activityWheel" destination="OJc-XO-YEt" id="4wH-Ii-saS"/>
                         <outlet property="collectionView" destination="duP-1W-0Lt" id="SRw-ii-dIK"/>
                         <outlet property="mapView" destination="m8V-bM-d4Z" id="QB9-S6-3m2"/>
+                        <outlet property="newCollectionButton" destination="rEd-F7-dIT" id="bsM-dr-yC7"/>
                         <outlet property="noImageLabel" destination="nzU-1S-345" id="W0k-7H-wuN"/>
                     </connections>
                 </viewController>

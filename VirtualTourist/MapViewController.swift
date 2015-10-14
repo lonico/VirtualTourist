@@ -28,23 +28,52 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         super.viewWillAppear(true)
     }
 
-    // detect a long press and add a new pin
+    // MARK: use long gesture to create and drag a pin
+    
+    var currentAnnotation = MKPointAnnotation()
+    
+    func updateLocation(annotation: MKPointAnnotation, point: CGPoint) {
+        
+        // CLLocationCoordinate2D(latitude: 40.738854666284, longitude: -105.455546187602)
+        let coordinate = self.mapView.convertPoint(point, toCoordinateFromView: self.mapView)
+        annotation.coordinate = coordinate
+    }
+    
+    func updateTitle(annotation: MKPointAnnotation) {
+        
+        annotation.title = annotation.coordinate.coord2text()
+    }
+    
+    // detect a long press and create a draggable pin
     @IBAction func longPressGesture(sender: UILongPressGestureRecognizer) {
         
-        if sender.state == UIGestureRecognizerState.Ended {
-            let point = sender.locationInView(mapView)
-            // CLLocationCoordinate2D(latitude: 40.738854666284, longitude: -105.455546187602)
-            let coordinate = mapView.convertPoint(point, toCoordinateFromView: mapView)
+        if sender.state == UIGestureRecognizerState.Began {
+            // create a "pin" once a long tap is recognized
+            let point = sender.locationInView(self.mapView)
             let annotation = MKPointAnnotation()
-            annotation.coordinate = coordinate
-            annotation.title = coordinate.coord2text()
-            mapView.addAnnotation(annotation)
+            self.updateLocation(annotation, point: point)
+            self.mapView.addAnnotation(annotation)
+            self.currentAnnotation = annotation
+        }
+        
+        if sender.state == UIGestureRecognizerState.Changed {
+            // enable the pin to be dragged around
+            let point = sender.locationInView(self.mapView)
+            self.updateLocation(self.currentAnnotation, point: point)
+        }
+        
+        if sender.state == UIGestureRecognizerState.Ended {
+            // finalize the pin location
+            let point = sender.locationInView(self.mapView)
+            self.updateLocation(self.currentAnnotation, point: point)
+            self.updateTitle(self.currentAnnotation)
+            print("ending drop and drag action")
         }
     }
     
     // MARK: - MKMapViewDelegate
     
-    // Here we create a pin view with a "right callout accessory view".
+    // Here we create a pin view (the pin itself)
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         
         let reuseId = "pin"
@@ -53,23 +82,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
             pinView!.canShowCallout = false
             pinView!.pinTintColor = UIColor.redColor()
-            //pinView!.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
             pinView!.draggable = true
         }
         else {
             pinView!.annotation = annotation
         }
+        pinView!.setDragState(.Dragging, animated: true)
         return pinView
-    }
-    
-    // This delegate method is implemented to respond to tapping a callout button.
-    func mapView(mapView: MKMapView, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) -> Void {
-        
-        print("Tapped")
-        mapView.deselectAnnotation(annotationView.annotation, animated: true)
-        let galleryVC = self.storyboard?.instantiateViewControllerWithIdentifier("photoGallery") as! PhotoGalleryViewController
-        galleryVC.pinView = annotationView
-        navigationController?.pushViewController(galleryVC, animated: true)
     }
     
     // This delegate method is implemented to respond to tapping a pin.
@@ -83,16 +102,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     // Delegate to respond to dragging a pin
     func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
-        
+                
         if newState == .Ending {
-            // title is read only.  We need to create a new annotation and 
-            // replace the existing one
+            print("ending drag action")
+            view.setDragState(.Ending, animated: true)
             print("drag \(view.annotation?.coordinate)")
-            let newAnnotation = MKPointAnnotation()
-            newAnnotation.coordinate = (view.annotation?.coordinate)!
-            newAnnotation.title = view.annotation?.coordinate.coord2text()
-            mapView.removeAnnotation(view.annotation!)
-            mapView.addAnnotation(newAnnotation)
+            if let annotation = view.annotation as? MKPointAnnotation {
+                annotation.title = annotation.coordinate.coord2text()
+            }
         }
     }
     

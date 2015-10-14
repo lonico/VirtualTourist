@@ -12,16 +12,17 @@ import MapKit
 class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
     
     let span = MKCoordinateSpanMake(0.1, 0.2)
-    var pinView: MKAnnotationView!
+    
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var collectionView: UICollectionView!
     @IBOutlet var activityWheel: UIActivityIndicatorView!
     @IBOutlet var noImageLabel: UILabel!
-    var viewIsActive = false
+    @IBOutlet var newCollectionButton: UIButton!
     
+    var pinView: MKAnnotationView!
+    var viewIsActive = false
     var imageURLs: [(String?, String, String)]?
     var imageDataStore = [String:UIImage]()
-    
     var defaultImage: UIImage? = nil
     
     // MARK: view life cycle
@@ -48,6 +49,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
                     dispatch_async(dispatch_get_main_queue()) {
                         self.activityWheel.stopAnimating()
                         self.collectionView.reloadData()
+                        self.newCollectionButton.enabled = true
                     }
                 }
             } else {
@@ -66,6 +68,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
     override func viewWillAppear(animated: Bool) {
         
         navigationController?.navigationBarHidden = false
+        newCollectionButton.enabled = false
         viewIsActive = true
     }
     
@@ -164,4 +167,9 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource {
             completion_handler(webImage, errorStr)
         }
     }
+    
+    @IBAction func newCollectionActionTouchUp(sender: UIButton) {
+        print("TODO action button")
+    }
+    
 }
