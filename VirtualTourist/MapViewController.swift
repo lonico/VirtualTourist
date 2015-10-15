@@ -32,48 +32,36 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     var currentAnnotation = MKPointAnnotation()
     
-    func updateLocation(annotation: MKPointAnnotation, point: CGPoint) {
-        
-        // CLLocationCoordinate2D(latitude: 40.738854666284, longitude: -105.455546187602)
-        let coordinate = self.mapView.convertPoint(point, toCoordinateFromView: self.mapView)
-        annotation.coordinate = coordinate
-    }
-    
-    func updateTitle(annotation: MKPointAnnotation) {
-        
-        annotation.title = annotation.coordinate.coord2text()
-    }
-    
     // detect a long press and create a draggable pin
     @IBAction func longPressGesture(sender: UILongPressGestureRecognizer) {
         
         if sender.state == UIGestureRecognizerState.Began {
             // create a "pin" once a long tap is recognized
-            let point = sender.locationInView(self.mapView)
+            let point = sender.locationInView(mapView)
             let annotation = MKPointAnnotation()
-            self.updateLocation(annotation, point: point)
-            self.mapView.addAnnotation(annotation)
-            self.currentAnnotation = annotation
+            updateLocation(annotation, point: point)
+            mapView.addAnnotation(annotation)
+            currentAnnotation = annotation
         }
         
         if sender.state == UIGestureRecognizerState.Changed {
             // enable the pin to be dragged around
-            let point = sender.locationInView(self.mapView)
-            self.updateLocation(self.currentAnnotation, point: point)
+            let point = sender.locationInView(mapView)
+            updateLocation(currentAnnotation, point: point)
         }
         
         if sender.state == UIGestureRecognizerState.Ended {
             // finalize the pin location
-            let point = sender.locationInView(self.mapView)
-            self.updateLocation(self.currentAnnotation, point: point)
-            self.updateTitle(self.currentAnnotation)
+            let point = sender.locationInView(mapView)
+            updateLocation(currentAnnotation, point: point)
+            currentAnnotation.updateTitle()
             print("ending drop and drag action")
         }
     }
     
-    // MARK: - MKMapViewDelegate
+    // MARK: - MKMapViewDelegate functions
     
-    // Here we create a pin view (the pin itself)
+    // Delegate to create a pin view (the pin itself)
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         
         let reuseId = "pin"
@@ -91,7 +79,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         return pinView
     }
     
-    // This delegate method is implemented to respond to tapping a pin.
+    // Delegate to respond to tapping a pin.
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         
         mapView.deselectAnnotation(view.annotation, animated: true)
@@ -102,13 +90,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     // Delegate to respond to dragging a pin
     func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
-                
+        
         if newState == .Ending {
             print("ending drag action")
             view.setDragState(.Ending, animated: true)
             print("drag \(view.annotation?.coordinate)")
             if let annotation = view.annotation as? MKPointAnnotation {
-                annotation.title = annotation.coordinate.coord2text()
+                annotation.updateTitle()
             }
         }
     }
@@ -117,5 +105,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         
         mapView.region.saveRegion()
+    }
+    
+    // MARK: utility
+    
+    func updateLocation(annotation: MKPointAnnotation, point: CGPoint) {
+        
+        // CLLocationCoordinate2D(latitude: 40.738854666284, longitude: -105.455546187602)
+        let coordinate = self.mapView.convertPoint(point, toCoordinateFromView: self.mapView)
+        annotation.coordinate = coordinate
     }
 }

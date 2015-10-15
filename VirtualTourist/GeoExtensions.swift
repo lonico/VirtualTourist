@@ -90,3 +90,11 @@ extension MKCoordinateRegion {
         return nil
     }
 }
+
+extension MKPointAnnotation {
+    
+    func updateTitle() {
+        
+        self.title = self.coordinate.coord2text()
+    }
+}
