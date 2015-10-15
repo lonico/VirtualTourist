@@ -8,8 +8,9 @@
 
 import UIKit
 import MapKit
+import CoreData
 
-class MapViewController: UIViewController, MKMapViewDelegate {
+class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
     
     @IBOutlet var mapView: MKMapView!
 
@@ -19,6 +20,25 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         // Do any additional setup after loading the view, typically from a nib.
         if let region = MKCoordinateRegion.getSavedRegion() {
             mapView.setRegion(region, animated: true)
+        }
+        
+        do {
+            try fetchedResultsController.performFetch()
+        } catch let error as NSError {
+            print("Fetch error, \(error.localizedDescription)")
+        }
+        
+        // why is this needed
+        fetchedResultsController.delegate = self
+
+        if let pins = fetchedResultsController.fetchedObjects as? [Pin] {
+            print("adding pins")
+            for pin in pins {
+                print("adding pin")
+                let annotation = MKPointAnnotation()
+                annotation.updateCoordinateAndTitle(pin.latitude, longitude: pin.longitude)
+                mapView.addAnnotation(annotation)
+            }
         }
     }
     
@@ -56,6 +76,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             updateLocation(currentAnnotation, point: point)
             currentAnnotation.updateTitle()
             print("ending drop and drag action")
+            _ = Pin(coordinate: currentAnnotation.coordinate, context: sharedContext)
+            CoreDataStackManager.sharedInstance().saveContext()
         }
     }
     
@@ -115,4 +137,33 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         let coordinate = self.mapView.convertPoint(point, toCoordinateFromView: self.mapView)
         annotation.coordinate = coordinate
     }
+    
+    // MARK: delegate to process changes to Pin store
+    
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        switch type {
+        case .Insert:
+            print("INSERTING")
+        case .Delete: break
+        case .Move: break
+        case .Update: break
+        }
+    }
+    
+    // MARK: coredata
+    
+    var sharedContext: NSManagedObjectContext {
+        return CoreDataStackManager.sharedInstance().managedObjectContext
+    }
+    
+    lazy var fetchedResultsController: NSFetchedResultsController = {
+        
+        let request = NSFetchRequest(entityName: "Pin")
+        
+        request.sortDescriptors = [NSSortDescriptor(key: "longitude", ascending: true)]
+        
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: request, managedObjectContext: CoreDataStackManager.sharedInstance().managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+        return fetchedResultsController
+        }()
+
 }

@@ -97,4 +97,11 @@ extension MKPointAnnotation {
         
         self.title = self.coordinate.coord2text()
     }
+    
+    func updateCoordinateAndTitle(latitute: Double, longitude: Double) {
+        
+        let coordinate = CLLocationCoordinate2DMake(latitute, longitude)
+        self.coordinate = coordinate
+        self.title = self.coordinate.coord2text()
+    }
 }
