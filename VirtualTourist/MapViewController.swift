@@ -13,6 +13,9 @@ import CoreData
 class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
     
     @IBOutlet var mapView: MKMapView!
+    
+    // cross-ref to find pin associated with MapView annotation
+    var pins = [MKPointAnnotation: Pin]()
 
     override func viewDidLoad() {
         
@@ -31,13 +34,14 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         // why is this needed
         fetchedResultsController.delegate = self
 
-        if let pins = fetchedResultsController.fetchedObjects as? [Pin] {
+        if let stored_pins = fetchedResultsController.fetchedObjects as? [Pin] {
             print("adding pins")
-            for pin in pins {
+            for pin in stored_pins {
                 print("adding pin")
                 let annotation = MKPointAnnotation()
                 annotation.updateCoordinateAndTitle(pin.latitude, longitude: pin.longitude)
                 mapView.addAnnotation(annotation)
+                pins[annotation] = pin
             }
         }
     }
@@ -76,8 +80,12 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             updateLocation(currentAnnotation, point: point)
             currentAnnotation.updateTitle()
             print("ending drop and drag action")
-            _ = Pin(coordinate: currentAnnotation.coordinate, context: sharedContext)
+            let pin = Pin(coordinate: currentAnnotation.coordinate, context: sharedContext)
             CoreDataStackManager.sharedInstance().saveContext()
+            pins[currentAnnotation] = pin
+            PhotoDB.getImageURLsForCoordinate(pins[currentAnnotation]!) { strerror in
+                print("TODO: \(strerror)")
+            }
         }
     }
     
@@ -106,16 +114,21 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         
         mapView.deselectAnnotation(view.annotation, animated: true)
         let galleryVC = self.storyboard?.instantiateViewControllerWithIdentifier("photoGallery") as! PhotoGalleryViewController
-        galleryVC.pinView = view
+        galleryVC.pinView = view as! MKPinAnnotationView
+        galleryVC.pin = pins[view.annotation as! MKPointAnnotation]
         navigationController?.pushViewController(galleryVC, animated: true)
     }
     
     // Delegate to respond to dragging a pin
+    // TODO: delete this, or add persistence
     func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
+        
+//        if newState == MKAnnotationViewDragState.Starting {
+//            let currentPin = view
+//        }
         
         if newState == .Ending {
             print("ending drag action")
-            view.setDragState(.Ending, animated: true)
             print("drag \(view.annotation?.coordinate)")
             if let annotation = view.annotation as? MKPointAnnotation {
                 annotation.updateTitle()

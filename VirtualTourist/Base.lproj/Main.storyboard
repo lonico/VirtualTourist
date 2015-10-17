@@ -139,12 +139,12 @@
                                         <connections>
                                             <outlet property="image" destination="EUk-1S-L3U" id="fjo-4G-14d"/>
                                             <outlet property="title" destination="QfC-TE-4hY" id="Ptw-MW-USO"/>
-                                            <segue destination="6uL-tA-MFa" kind="presentation" identifier="photoFullView" id="NCW-Vn-RMg"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
                                 <connections>
                                     <outlet property="dataSource" destination="aK1-Sr-9xG" id="nki-HG-Hh2"/>
+                                    <outlet property="delegate" destination="aK1-Sr-9xG" id="gS6-WU-5w2"/>
                                 </connections>
                             </collectionView>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="OJc-XO-YEt">
@@ -213,7 +213,7 @@
         <!--Photo Full View Controller-->
         <scene sceneID="bZ1-7e-axU">
             <objects>
-                <viewController id="6uL-tA-MFa" userLabel="Photo Full View Controller" customClass="PhotoFullViewController" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PhotoFullViewController" id="6uL-tA-MFa" userLabel="Photo Full View Controller" customClass="PhotoFullViewController" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="knO-a3-u5M"/>
                         <viewControllerLayoutGuide type="bottom" id="iyc-tQ-dLM"/>

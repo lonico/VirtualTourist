@@ -13,5 +13,5 @@ class CollectionViewCell: UICollectionViewCell {
     @IBOutlet var image: UIImageView!
     @IBOutlet var title: UILabel!
     
-    var url_m: String! = nil
+    var photo: Photo! = nil
 }

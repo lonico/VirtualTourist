@@ -30,4 +30,8 @@ class Pin: NSManagedObject {
         latitude = coordinate.latitude
         longitude = coordinate.longitude
     }
+    
+    var coordinate: CLLocationCoordinate2D {
+        return CLLocationCoordinate2DMake(latitude, longitude)
+    }
 }
