@@ -7,11 +7,13 @@
 //
 
 import Foundation
+import UIKit
 
 class HttpRequest {
     
     var session = NSURLSession.sharedSession()
     
+    // MARK: Only GET method is needed
     
     func sendGetRequest(urlString: String, methodArguments: [String : AnyObject]?, completion_handler: (NSData?, NSError?) -> Void) {
         
@@ -33,7 +35,31 @@ class HttpRequest {
         return Singleton.instance
     }
     
-    /* Helper function: Given a dictionary of parameters, convert to a string for a url */
+    // MARK: utilities
+    
+    // Like NSData but with asynchronous completions handler
+    func getImageFromURLString(urlString: String, completion_handler: (UIImage?, String?) -> Void) {
+        
+        sendGetRequest(urlString, methodArguments: nil) { data, error in
+            
+            var image: UIImage? = nil
+            var errorStr: String? = nil
+            if let error = error {
+                errorStr = "Could not complete the request:\n \(error.localizedDescription)"
+                print(errorStr)
+            } else {
+                if let imageData = data {
+                    image = UIImage(data: imageData)
+                } else {
+                    errorStr = "No data for: \(urlString)"
+                    print(errorStr)
+                }
+            }
+            completion_handler(image, errorStr)
+        }
+    }
+
+    // Helper function: Given a dictionary of parameters, convert to a string for a url
     static func escapedParameters(parameters: [String : AnyObject]?) -> String {
         
         var urlVars = [String]()

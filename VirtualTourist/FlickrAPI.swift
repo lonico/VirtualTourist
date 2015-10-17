@@ -9,8 +9,6 @@
 import GameKit
 import MapKit
 
-// TODO: move somewhere else
-
 struct FlickrAPI {
     
     struct ArgValues {
@@ -23,30 +21,29 @@ struct FlickrAPI {
         static let NO_JSON_CALLBACK = "1"
     }
     
-    static func getImagesFromFlickrForCoordinate(coordinate: CLLocationCoordinate2D, completion_handler: ([(String?, String, String)]?, String?) -> Void) {
+    // MARK: wrapper to call Flick photo search API based on location
+    
+    static func getPhotosFromFlickrForCoordinate(coordinate: CLLocationCoordinate2D, completion_handler: ([[String: AnyObject]]?, String?) -> Void) {
         
         let searchMethodArguments = [
             "bbox": FlickrAPI.createBoundingBoxString(coordinate),
         ]
+        let max_photos = 51     // a multiple of 3, as we have 3 images in a row
         
-        FlickrAPI.getImagesFromFlickrBySearch(searchMethodArguments) { photos, error in
+        FlickrAPI.getPhotosFromFlickrBySearch(searchMethodArguments) { photos, error in
             if let errorStr = error {
-                print("Error in getImagesFromFlickrBySearch: \(errorStr)")
+                print("Error in \(__FUNCTION__): \(errorStr)")
                 completion_handler(nil, errorStr)
             } else if let photos = photos {
-                print(photos.count) // TODO:
-                var imageURLs = [(String?, String, String)]()
-                for photo in photos {
-                    let photoDictionary = photo //as [String: AnyObject]
-                    
-                    let photoTitle = photoDictionary["title"] as? String
-                    if let imageUrlTString = photoDictionary["url_t"] as? String {
-                        if let imageUrlMString = photoDictionary["url_m"] as? String {
-                            imageURLs.append((photoTitle, imageUrlTString, imageUrlMString))
-                        }
-                    }
+                print(photos.count) // TODO: remove this line
+                var photos_slice: [[String: AnyObject]]
+                // Let's take only the first 51 pictures:
+                if photos.count > max_photos {
+                    photos_slice = Array(photos[0...max_photos-1])
+                } else {
+                    photos_slice = photos
                 }
-                completion_handler(imageURLs, nil)
+                completion_handler(photos_slice, nil)
             } else {
                 let errorStr = "No picture found"
                 print(errorStr)
@@ -76,9 +73,11 @@ struct FlickrAPI {
         return "\(bottom_left_lon),\(bottom_left_lat),\(top_right_lon),\(top_right_lat)"
     }
     
+    // MARK: Flickr photo search APIs
+    
     /* Function makes first request to get a random page, then it makes a request to get all images from the random page */
-    /* Images are shuffled in randam order */
-    static func getImagesFromFlickrBySearch(methodArguments: [String : AnyObject], completion_handler: ([[String: AnyObject]]?, String?) -> Void) {
+    /* Images are shuffled in random order */
+    static func getPhotosFromFlickrBySearch(methodArguments: [String : AnyObject], completion_handler: ([[String: AnyObject]]?, String?) -> Void) {
 
         let urlString = ArgValues.BASE_URL
         var searchMethodArguments = [
@@ -109,7 +108,7 @@ struct FlickrAPI {
                             /* Flickr API - will only return up the 4000 images (100 per page * 40 page max) */
                             let pageLimit = min(totalPages, 40)
                             let randomPage = Int(arc4random_uniform(UInt32(pageLimit))) + 1
-                            FlickrAPI.getImagesFromFlickrBySearchWithPage(searchMethodArguments, pageNumber: randomPage) { photos, error in
+                            FlickrAPI.getPhotosFromFlickrBySearchWithPage(searchMethodArguments, pageNumber: randomPage) { photos, error in
                                 
                                 if let error = error {
                                     errorStr = "Could not complete the request:\n \(error)"
@@ -141,7 +140,7 @@ struct FlickrAPI {
         }
     }
     
-    static func getImagesFromFlickrBySearchWithPage(methodArguments: [String : AnyObject], pageNumber: Int, completion_handler: ([[String: AnyObject]]?, String?) -> Void) {
+    static func getPhotosFromFlickrBySearchWithPage(methodArguments: [String : AnyObject], pageNumber: Int, completion_handler: ([[String: AnyObject]]?, String?) -> Void) {
         
         /* Add the page to the method's arguments */
         var argDictionary = methodArguments
@@ -184,27 +183,6 @@ struct FlickrAPI {
                 }
             }
             completion_handler(shuffledPics, errorStr)
-        }
-    }
-    
-    static func getImageFromURLString(urlString: String, completion_handler: (UIImage?, String?) -> Void) {
-        
-        HttpRequest.sharedInstance().sendGetRequest(urlString, methodArguments: nil) { data, error in
-            
-            var image: UIImage? = nil
-            var errorStr: String? = nil
-            if let error = error {
-                errorStr = "Could not complete the request:\n \(error.localizedDescription)"
-                print(errorStr)
-            } else {
-                if let imageData = data {
-                    image = UIImage(data: imageData)
-                } else {
-                    errorStr = "No data for: \(urlString)"
-                    print(errorStr)
-                }
-            }
-            completion_handler(image, errorStr)
         }
     }
 }

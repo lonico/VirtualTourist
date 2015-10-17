@@ -31,7 +31,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             print("Fetch error, \(error.localizedDescription)")
         }
         
-        // why is this needed
+        // TODO: only if we want to managed pin insertion/deletion
         fetchedResultsController.delegate = self
 
         if let stored_pins = fetchedResultsController.fetchedObjects as? [Pin] {
@@ -83,7 +83,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             let pin = Pin(coordinate: currentAnnotation.coordinate, context: sharedContext)
             CoreDataStackManager.sharedInstance().saveContext()
             pins[currentAnnotation] = pin
-            PhotoDB.getImageURLsForCoordinate(pins[currentAnnotation]!) { strerror in
+            pin.getPhotosForPin() { strerror in
                 print("TODO: \(strerror)")
             }
         }

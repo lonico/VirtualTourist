@@ -23,9 +23,8 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     var pinView: MKPinAnnotationView!
     var pin: Pin!
     var viewIsActive = false
-//    var imageURLs: [(String?, String, String)]?
-//    var imageDataStore = [String:UIImage]()
     var defaultImage: UIImage? = nil
+    var needToReloadData = false
     
     // MARK: view life cycle
     override func viewDidLoad() {
@@ -40,7 +39,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
             defaultImage = UIImage(named: "VirtualTourist_120")
         }
         
-        PhotoDB.getUrlCount() { count, errorStr in
+        pin.getPhotoCount() { count, errorStr in
             if let count = count {
                 if count == 0 {
                     dispatch_async(dispatch_get_main_queue()) {
@@ -49,6 +48,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
                     }
                 } else {
                     dispatch_async(dispatch_get_main_queue()) {
+                        print("activityWheel.stopAnimating")
                         self.activityWheel.stopAnimating()
                         self.collectionView.reloadData()
                         self.newCollectionButton.enabled = true
@@ -74,30 +74,6 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         // Step 6: Set the delegate to this view controller
         fetchedResultsController.delegate = self
 
-        
-//        FlickrAPI.getImagesFromFlickrForCoordinate((self.pinView.annotation?.coordinate)!) { urls, errorStr in
-//            if let urls = urls {
-//                self.imageURLs = urls
-//                if urls.count == 0 {
-//                    dispatch_async(dispatch_get_main_queue()) {
-//                        self.noImageLabel.hidden = false
-//                        self.activityWheel.stopAnimating()
-//                    }
-//                } else {
-//                    dispatch_async(dispatch_get_main_queue()) {
-//                        self.activityWheel.stopAnimating()
-//                        self.collectionView.reloadData()
-//                        self.newCollectionButton.enabled = true
-//                    }
-//                }
-//            } else {
-//                let alert = AlertController.Alert(msg: errorStr, title: AlertController.AlertTitle.OpenURLError) { action in
-//                    self.activityWheel.stopAnimating()
-//                }
-//                alert.dispatchAlert(self)
-//            }
-//        }
-        
         let region = MKCoordinateRegion(center: (pinView.annotation?.coordinate)!, span: span)
         mapView.setRegion(region, animated: true)
         mapView.addAnnotation(pinView.annotation!)
@@ -122,40 +98,6 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         // Dispose of any resources that can be recreated.
     }
 
-    // MARK: - Navigation
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-        print("segue")
-        let vc = segue.destinationViewController as! PhotoFullViewController
-        let cell = sender as! CollectionViewCell
-        let photo = cell.photo
-        let image = photo.fullImage 
-        if image == nil {
-            getImageForURLPath(photo.url_m) { image, errorStr in
-                
-                if image != nil {
-                    photo.fullImage = image
-                    dispatch_async(dispatch_get_main_queue()) {
-                        vc.photoImage = image
-                        vc.refresh_image()
-                    }
-                } else {
-                    let alert = AlertController.Alert(msg: errorStr, title: AlertController.AlertTitle.OpenURLError) { action in
-                        vc.dismissViewControllerAnimated(true, completion: nil)
-                    }
-                    alert.dispatchAlert(vc)
-                }
-            }
-        } else {
-            vc.photoImage = image
-        }
-        viewIsActive = false
-    }
-
     // MARK: CollectionView data source delegates
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -168,29 +110,11 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("photoCell", forIndexPath: indexPath)
         let photo = fetchedResultsController.fetchedObjects![indexPath.row] as? Photo
         if photo != nil {
-            
             let image = photo?.thumbNail
             if image == nil {
-                let url_t = photo!.url_t
                 (cell as! CollectionViewCell).image.image = defaultImage
                 (cell as! CollectionViewCell).photo = nil
-                getImageForURLPath(url_t) { image, errorStr in
-                    if image != nil {
-                        photo?.thumbNail = image!
-                        (cell as! CollectionViewCell).image.image = image
-                        (cell as! CollectionViewCell).photo = photo
-                        dispatch_async(dispatch_get_main_queue()) {
-                            
-                            if (self.viewIsActive && collectionView.indexPathsForVisibleItems().contains(indexPath)) {
-                                // reloadData generates too many requests
-                                // reloadItemsAtIndexPaths crashed if the view goes out of focus, hence the viewIsActive
-                                collectionView.reloadItemsAtIndexPaths([indexPath])
-                            }
-                        }
-                    } else {
-                        AlertController.Alert(msg: errorStr, title: AlertController.AlertTitle.OpenURLError).dispatchAlert(self)
-                    }
-                }
+                needToReloadData = true
             } else {
                 (cell as! CollectionViewCell).image.image = image
                 (cell as! CollectionViewCell).photo = photo
@@ -206,13 +130,10 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         let cell = collectionView.cellForItemAtIndexPath(indexPath) as! CollectionViewCell
         if cell.photo != nil {
             let vc = storyboard?.instantiateViewControllerWithIdentifier("PhotoFullViewController") as! PhotoFullViewController
-            let photo = cell.photo
-            let image = photo.fullImage
+            let image = cell.photo.fullImage
             if image == nil {
-                getImageForURLPath(photo.url_m) { image, errorStr in
-                    
+                cell.photo.getFullImageFromUrl() { image, errorStr in
                     if image != nil {
-                        photo.fullImage = image
                         dispatch_async(dispatch_get_main_queue()) {
                             vc.photoImage = image
                             vc.refresh_image()
@@ -228,7 +149,6 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
                 vc.photoImage = image
             }
             viewIsActive = false
-
             presentViewController(vc, animated: true, completion: nil)
         }
     }
@@ -236,9 +156,9 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     // TODO: revisit with codedata
     func getImageForURLPath(urlString: String, completion_handler: (UIImage?, String?) -> Void) {
         
-        FlickrAPI.getImageFromURLString(urlString) { webImage, errorStr in
-            completion_handler(webImage, errorStr)
-        }
+//        HttpRequest.sharedInstance().getImageFromURLString(urlString) { webImage, errorStr in
+//            completion_handler(webImage, errorStr)
+//        }
     }
     
     @IBAction func newCollectionActionTouchUp(sender: UIButton) {

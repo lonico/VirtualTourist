@@ -12,7 +12,7 @@ class ImageCache {
     
     private var inMemoryCache = NSCache()
     
-    // MARK: - Retreiving images
+    // MARK: - Retrieving images
     
     func imageForURL(identifier: String?) -> UIImage? {
         
@@ -25,16 +25,16 @@ class ImageCache {
         
         // First try the memory cache
         if let image = inMemoryCache.objectForKey(path) as? UIImage {
-            print("found in cache \(path)")
+            // print("found in cache \(path)")
             return image
         }
         
-        // Next Try the hard drive
+        // Next try the hard drive
         if let data = NSData(contentsOfFile: path) {
             print("found on drive \(path)")
             return UIImage(data: data)
         }
-        
+
         return nil
     }
     
