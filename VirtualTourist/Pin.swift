@@ -19,6 +19,7 @@ class Pin: NSManagedObject {
     @NSManaged var photos: [Photo]
     var arePhotosLoading: Bool = false
     var errorStr: String! = nil
+    var imagesLoaded = 0
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)

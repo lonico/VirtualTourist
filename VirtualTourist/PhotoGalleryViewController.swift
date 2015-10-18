@@ -25,6 +25,9 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     var viewIsActive = false
     var defaultImage: UIImage? = nil
     var needToReloadData = false
+    var reloading = false
+    var reload_count = 0
+    let max_reload_count = 60
     
     // MARK: view life cycle
     override func viewDidLoad() {
@@ -77,6 +80,8 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         let region = MKCoordinateRegion(center: (pinView.annotation?.coordinate)!, span: span)
         mapView.setRegion(region, animated: true)
         mapView.addAnnotation(pinView.annotation!)
+        
+        reload_asynch()
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -171,10 +176,35 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         switch type {
         case .Insert:
             print("INSERTING")
-            self.collectionView.reloadData()
+            //self.collectionView.reloadData()
         case .Delete: break
         case .Move: break
-        case .Update: break
+        case .Update:
+            print("UPDATING")
+        }
+    }
+    
+    func reload_asynch() {
+        if pin.imagesLoaded == pin.photos.count || reload_count >= max_reload_count {
+            // stop scheduling more reloads
+            print("reloading stopped!")
+            return
+        }
+        reload_count++
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
+            sleep(1)
+            print("reloading, as needed")
+            if self.needToReloadData && !self.reloading {
+                self.needToReloadData = false
+                self.reloading = true
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.collectionView.reloadData()
+                    self.reloading = false
+                    self.reload_asynch()
+                }
+            } else {
+                self.reload_asynch()
+            }
         }
     }
     
