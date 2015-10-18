@@ -35,7 +35,7 @@ struct FlickrAPI {
                 print("Error in \(__FUNCTION__): \(errorStr)")
                 completion_handler(nil, errorStr)
             } else if let photos = photos {
-                print(photos.count) // TODO: remove this line
+                print(">>> \(photos.count)") // TODO: remove this line
                 var photos_slice: [[String: AnyObject]]
                 // Let's take only the first 51 pictures:
                 if photos.count > max_photos {

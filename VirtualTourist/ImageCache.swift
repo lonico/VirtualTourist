@@ -31,7 +31,7 @@ class ImageCache {
         
         // Next try the hard drive
         if let data = NSData(contentsOfFile: path) {
-            print("found on drive \(path)")
+            print(">>> found on drive \(path)")
             return UIImage(data: data)
         }
 

@@ -35,9 +35,9 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         fetchedResultsController.delegate = self
 
         if let stored_pins = fetchedResultsController.fetchedObjects as? [Pin] {
-            print("adding pins")
+            print(">>> adding pins")
             for pin in stored_pins {
-                print("adding pin")
+                print(">>> adding pin")
                 let annotation = MKPointAnnotation()
                 annotation.updateCoordinateAndTitle(pin.latitude, longitude: pin.longitude)
                 mapView.addAnnotation(annotation)
@@ -79,10 +79,11 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             let point = sender.locationInView(mapView)
             updateLocation(currentAnnotation, point: point)
             currentAnnotation.updateTitle()
-            print("ending drop and drag action")
+            print(">>> ending drop and drag action")
             let pin = Pin(coordinate: currentAnnotation.coordinate, context: sharedContext)
             CoreDataStackManager.sharedInstance().saveContext()
             pins[currentAnnotation] = pin
+            // let's proactively search pictures in flickr
             pin.getPhotosForPin() { strerror in
                 print("TODO: \(strerror)")
             }
@@ -119,23 +120,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         navigationController?.pushViewController(galleryVC, animated: true)
     }
     
-    // Delegate to respond to dragging a pin
-    // TODO: delete this, or add persistence
-    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
-        
-//        if newState == MKAnnotationViewDragState.Starting {
-//            let currentPin = view
-//        }
-        
-        if newState == .Ending {
-            print("ending drag action")
-            print("drag \(view.annotation?.coordinate)")
-            if let annotation = view.annotation as? MKPointAnnotation {
-                annotation.updateTitle()
-            }
-        }
-    }
-    
     // Delegate to respond to moving or zooming the map region
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         
@@ -156,7 +140,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         switch type {
         case .Insert:
-            print("INSERTING")
+            print(">>> INSERTING pin")
         case .Delete: break
         case .Move: break
         case .Update: break

@@ -50,7 +50,7 @@ class Pin: NSManagedObject {
                     _ = Photo(dictionary: dictionary, context: self.sharedContext)
                     CoreDataStackManager.sharedInstance().saveContext()
                 }
-                print("pin photo count: \(photos.count)")
+                print(">>> pin photo count: \(photos.count)")
             } else if let errorStr = errorStr {
                 print(errorStr)
                 self.errorStr = errorStr
@@ -67,7 +67,7 @@ class Pin: NSManagedObject {
         var sleeptime = 0
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0)) {
             while self.arePhotosLoading {
-                print("Sleeping...")
+                print(">>> Sleeping...")
                 sleep(1)
                 sleeptime++
                 if sleeptime > 60 {

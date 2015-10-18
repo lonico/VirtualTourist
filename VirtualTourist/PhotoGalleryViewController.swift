@@ -30,7 +30,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     // MARK: view life cycle
     override func viewDidLoad() {
         
-        print("ViewDidLoad")
+        print(">>> PhotoGallery: ViewDidLoad")
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         self.noImageLabel.hidden = true
@@ -53,6 +53,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
                         self.activityWheel.stopAnimating()
                         self.reloading = true
                         self.collectionView.reloadData()
+                        self.reloading = false
                     }
                 }
             } else {
@@ -166,7 +167,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     }
     
     @IBAction func newCollectionActionTouchUp(sender: UIButton) {
-        print("TODO action button")
+        print(">>> TODO action button")
     }
     
     // MARK: delegate to process changes to Photo store
@@ -174,12 +175,12 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         switch type {
         case .Insert:
-            print("INSERTING")
+            print(">>> INSERTING photo")
             //self.collectionView.reloadData()
         case .Delete: break
         case .Move: break
         case .Update:
-            print("UPDATING")
+            print(">>> UPDATING photo")
         }
     }
     
