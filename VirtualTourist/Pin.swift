@@ -19,7 +19,7 @@ class Pin: NSManagedObject {
     @NSManaged var photos: [Photo]
     var arePhotosLoading: Bool = false
     var errorStr: String! = nil
-    var imagesLoaded = 0
+    dynamic var imagesLoaded = 0
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -77,6 +77,11 @@ class Pin: NSManagedObject {
             }
             completion_handler(self.photos.count, self.errorStr)
         }
+    }
+    
+    func incrementLoadedImageCount() {
+        imagesLoaded++
+        didChangeValueForKey("imagesLoaded")
     }
     
     // MARK: coredata

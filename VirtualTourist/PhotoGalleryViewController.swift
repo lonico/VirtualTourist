@@ -26,9 +26,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     var defaultImage: UIImage? = nil
     var needToReloadData = false
     var reloading = false
-    var reload_count = 0
-    let max_reload_count = 60
-    
+
     // MARK: view life cycle
     override func viewDidLoad() {
         
@@ -42,6 +40,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
             defaultImage = UIImage(named: "VirtualTourist_120")
         }
         
+        // wait for flickr photos to be fetched, and take action
         pin.getPhotoCount() { count, errorStr in
             if let count = count {
                 if count == 0 {
@@ -51,10 +50,9 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
                     }
                 } else {
                     dispatch_async(dispatch_get_main_queue()) {
-                        print("activityWheel.stopAnimating")
                         self.activityWheel.stopAnimating()
+                        self.reloading = true
                         self.collectionView.reloadData()
-                        self.newCollectionButton.enabled = true
                     }
                 }
             } else {
@@ -81,8 +79,8 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         mapView.setRegion(region, animated: true)
         mapView.addAnnotation(pinView.annotation!)
         
-        reload_asynch()
-    }
+        pin.addObserver(self, forKeyPath: "imagesLoaded", options: NSKeyValueObservingOptions.New, context: nil) //&observer_context)
+        }
 
     override func viewWillAppear(animated: Bool) {
         
@@ -94,6 +92,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     override func viewWillDisappear(animated: Bool) {
         
         viewIsActive = false
+        pin.removeObserver(self, forKeyPath: "imagesLoaded")
         super.viewWillDisappear(animated)
     }
     
@@ -184,30 +183,21 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         }
     }
     
-    func reload_asynch() {
-        if pin.imagesLoaded == pin.photos.count || reload_count >= max_reload_count {
-            // stop scheduling more reloads
-            print("reloading stopped!")
-            return
-        }
-        reload_count++
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
-            sleep(1)
-            print("reloading, as needed")
-            if self.needToReloadData && !self.reloading {
-                self.needToReloadData = false
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+        if keyPath == "imagesLoaded" {
+            print(">>> KVO: reloading, as image was added")
+            if !self.reloading {
                 self.reloading = true
                 dispatch_async(dispatch_get_main_queue()) {
                     self.collectionView.reloadData()
                     self.reloading = false
-                    self.reload_asynch()
                 }
-            } else {
-                self.reload_asynch()
             }
+        } else {
+            super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
         }
     }
-    
+
     // MARK: coredata
     
     var sharedContext: NSManagedObjectContext {

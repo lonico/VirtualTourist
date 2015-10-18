@@ -86,7 +86,7 @@ class Photo: NSManagedObject {
                 
                 if image != nil {
                     self.thumbNail = image!
-                    self.pin.imagesLoaded++
+                    self.pin.incrementLoadedImageCount()
                 } else if strerror != nil {
                     // TODO: report errors, but not for every thumbnail
                     print(strerror)
