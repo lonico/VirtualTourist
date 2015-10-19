@@ -17,6 +17,7 @@ class Pin: NSManagedObject {
     @NSManaged var latitude: Double
     @NSManaged var longitude: Double
     @NSManaged var photos: [Photo]
+    @NSManaged var locality: Locality
     var arePhotosLoading: Bool = false
     var errorStr: String! = nil
     dynamic var thumbnailsLoadedCount = 0
@@ -33,6 +34,7 @@ class Pin: NSManagedObject {
         latitude = coordinate.latitude
         longitude = coordinate.longitude
         arePhotosLoading = false
+        GeoCoder.getLocationForPin(self)
     }
     
     var coordinate: CLLocationCoordinate2D {
@@ -48,6 +50,7 @@ class Pin: NSManagedObject {
             if let photos = photos {
                 for photo in photos {
                     var dictionary = photo
+                    // TODO: SANITIZE DICTIONARY
                     dictionary[Photo.Key.pin] = self
                     _ = Photo(dictionary: dictionary, context: self.sharedContext)
                     CoreDataStackManager.sharedInstance().saveContext()

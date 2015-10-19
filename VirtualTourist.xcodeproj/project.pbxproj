@@ -18,6 +18,8 @@
 		C03F00FE1BB7A672002BA7F3 /* VirtualTouristTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03F00FD1BB7A672002BA7F3 /* VirtualTouristTests.swift */; };
 		C03F01091BB7A672002BA7F3 /* VirtualTouristUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03F01081BB7A672002BA7F3 /* VirtualTouristUITests.swift */; };
 		C03F01171BB7A7D7002BA7F3 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03F01161BB7A7D7002BA7F3 /* MapViewController.swift */; settings = {ASSET_TAGS = (); }; };
+		C0B1522B1BD4AAEA00D0F966 /* GeoCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B1522A1BD4AAE900D0F966 /* GeoCoder.swift */; settings = {ASSET_TAGS = (); }; };
+		C0B1522D1BD4B19400D0F966 /* Locality.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B1522C1BD4B19400D0F966 /* Locality.swift */; settings = {ASSET_TAGS = (); }; };
 		C0BB1A4B1BCF746E002DE346 /* PhotoDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0BB1A4A1BCF746E002DE346 /* PhotoDB.swift */; settings = {ASSET_TAGS = (); }; };
 		C0CBFC0E1BC1E10A006F461F /* FlickrAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CBFC0D1BC1E10A006F461F /* FlickrAPI.swift */; settings = {ASSET_TAGS = (); }; };
 		C0CBFC141BC1E270006F461F /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CBFC131BC1E270006F461F /* HttpRequest.swift */; settings = {ASSET_TAGS = (); }; };
@@ -64,6 +66,8 @@
 		C03F01081BB7A672002BA7F3 /* VirtualTouristUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualTouristUITests.swift; sourceTree = "<group>"; };
 		C03F010A1BB7A672002BA7F3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C03F01161BB7A7D7002BA7F3 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		C0B1522A1BD4AAE900D0F966 /* GeoCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeoCoder.swift; sourceTree = "<group>"; };
+		C0B1522C1BD4B19400D0F966 /* Locality.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Locality.swift; sourceTree = "<group>"; };
 		C0BB1A4A1BCF746E002DE346 /* PhotoDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoDB.swift; sourceTree = "<group>"; };
 		C0CBFC0D1BC1E10A006F461F /* FlickrAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlickrAPI.swift; sourceTree = "<group>"; };
 		C0CBFC131BC1E270006F461F /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
@@ -154,10 +158,12 @@
 			children = (
 				C00853D51BCF48040096A8B6 /* CoreDataStackManager.swift */,
 				C00853D71BCF488F0096A8B6 /* Pin.swift */,
+				C0B1522C1BD4B19400D0F966 /* Locality.swift */,
 				C00853D91BCF4C270096A8B6 /* Photo.swift */,
 				C0BB1A4A1BCF746E002DE346 /* PhotoDB.swift */,
 				C0D24C071BD2106300EE023A /* ImageCache.swift */,
 				C0D426511BBBA46F00311C0F /* GeoExtensions.swift */,
+				C0B1522A1BD4AAE900D0F966 /* GeoCoder.swift */,
 				C0CBFC0D1BC1E10A006F461F /* FlickrAPI.swift */,
 				C0CBFC131BC1E270006F461F /* HttpRequest.swift */,
 				C0CBFC511BC1EDF7006F461F /* AlertController.swift */,
@@ -319,12 +325,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				C0D24C081BD2106300EE023A /* ImageCache.swift in Sources */,
+				C0B1522B1BD4AAEA00D0F966 /* GeoCoder.swift in Sources */,
 				C03F00E61BB7A672002BA7F3 /* AppDelegate.swift in Sources */,
 				C0D426501BBB889C00311C0F /* CollectionViewCell.swift in Sources */,
 				C00853D61BCF48040096A8B6 /* CoreDataStackManager.swift in Sources */,
 				C00853D81BCF488F0096A8B6 /* Pin.swift in Sources */,
 				C0CBFC0E1BC1E10A006F461F /* FlickrAPI.swift in Sources */,
 				C03F00EE1BB7A672002BA7F3 /* VirtualTourist.xcdatamodeld in Sources */,
+				C0B1522D1BD4B19400D0F966 /* Locality.swift in Sources */,
 				C00853DA1BCF4C270096A8B6 /* Photo.swift in Sources */,
 				C0D426581BBE3DED00311C0F /* PhotoFullViewController.swift in Sources */,
 				C0CBFC521BC1EDF7006F461F /* AlertController.swift in Sources */,

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="8195" systemVersion="15A284" minimumToolsVersion="Automatic">
+    <entity name="Locality" representedClassName="Locality" syncable="YES">
+        <attribute name="administrativeArea" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="country" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="pin" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Pin" inverseName="locality" inverseEntity="Pin" syncable="YES"/>
+    </entity>
     <entity name="Photo" representedClassName="Photo" syncable="YES">
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url_m" optional="YES" attributeType="String" syncable="YES"/>
@@ -9,10 +15,12 @@
     <entity name="Pin" representedClassName="Pin" syncable="YES">
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="locality" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Locality" inverseName="pin" inverseEntity="Locality" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="pin" inverseEntity="Photo" syncable="YES"/>
     </entity>
     <elements>
         <element name="Photo" positionX="-54" positionY="-9" width="128" height="105"/>
-        <element name="Pin" positionX="-63" positionY="-18" width="128" height="90"/>
+        <element name="Pin" positionX="-63" positionY="-18" width="128" height="105"/>
+        <element name="Locality" positionX="-63" positionY="27" width="128" height="105"/>
     </elements>
 </model>
