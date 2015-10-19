@@ -19,7 +19,7 @@ class Pin: NSManagedObject {
     @NSManaged var photos: [Photo]
     var arePhotosLoading: Bool = false
     var errorStr: String! = nil
-    dynamic var imagesLoaded = 0
+    dynamic var thumbnailsLoadedCount = 0
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -39,10 +39,12 @@ class Pin: NSManagedObject {
         return CLLocationCoordinate2DMake(latitude, longitude)
     }
     
-    func getPhotosForPin(completion_handler: (String?) -> Void) {
+    func getPhotosForPin() {
         
         arePhotosLoading = true
+        errorStr = nil
         FlickrAPI.getPhotosFromFlickrForCoordinate(coordinate) { photos, errorStr in
+            
             if let photos = photos {
                 for photo in photos {
                     var dictionary = photo
@@ -59,15 +61,14 @@ class Pin: NSManagedObject {
                 print(errorStr)
             }
             self.arePhotosLoading = false
-            completion_handler(errorStr)
         }
     }
     
-    func getPhotoCount(completion_handler: (Int?, String?) -> Void) {
+    func getPhotoCount(completion_handler: (Int, String?) -> Void) {
         var sleeptime = 0
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0)) {
             while self.arePhotosLoading {
-                print(">>> Sleeping...")
+                print(">>> Sleeping... \(sleeptime)")
                 sleep(1)
                 sleeptime++
                 if sleeptime > 60 {
@@ -79,8 +80,8 @@ class Pin: NSManagedObject {
         }
     }
     
-    func incrementLoadedImageCount() {
-        imagesLoaded++
+    func incrementLoadedThumbnailsCount() {
+        thumbnailsLoadedCount++
     }
     
     // MARK: coredata

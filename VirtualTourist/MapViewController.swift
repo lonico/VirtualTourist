@@ -84,9 +84,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             CoreDataStackManager.sharedInstance().saveContext()
             pins[currentAnnotation] = pin
             // let's proactively search pictures in flickr
-            pin.getPhotosForPin() { strerror in
-                print("TODO: \(strerror)")
-            }
+            // error reporting will be done when the results are needed in collectionView
+            pin.getPhotosForPin()
         }
     }
     

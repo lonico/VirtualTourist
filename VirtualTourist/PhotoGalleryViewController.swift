@@ -42,25 +42,27 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         
         // wait for flickr photos to be fetched, and take action
         pin.getPhotoCount() { count, errorStr in
-            if let count = count {
-                if count == 0 {
-                    dispatch_async(dispatch_get_main_queue()) {
-                        self.noImageLabel.hidden = false
-                        self.activityWheel.stopAnimating()
-                    }
-                } else {
-                    dispatch_async(dispatch_get_main_queue()) {
-                        self.activityWheel.stopAnimating()
-                        self.reloading = true
-                        self.collectionView.reloadData()
-                        self.reloading = false
-                    }
-                }
-            } else {
+            if let errorStr = errorStr {
                 let alert = AlertController.Alert(msg: errorStr, title: AlertController.AlertTitle.OpenURLError) { action in
                     self.activityWheel.stopAnimating()
                 }
                 alert.dispatchAlert(self)
+            } else if count == 0 {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.noImageLabel.hidden = false
+                    self.activityWheel.stopAnimating()
+                }
+            } else {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.activityWheel.stopAnimating()
+                    self.reloading = true
+                    self.needToReloadData = false
+                    self.collectionView.reloadData()
+                    self.reloading = false
+                    if !self.needToReloadData {
+                        self.newCollectionButton.enabled = true
+                    }
+                }
             }
         }
         
@@ -80,7 +82,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         mapView.setRegion(region, animated: true)
         mapView.addAnnotation(pinView.annotation!)
         
-        pin.addObserver(self, forKeyPath: "imagesLoaded", options: NSKeyValueObservingOptions.New, context: nil) //&observer_context)
+        pin.addObserver(self, forKeyPath: "thumbnailsLoadedCount", options: NSKeyValueObservingOptions.New, context: nil) //&observer_context)
         }
 
     override func viewWillAppear(animated: Bool) {
@@ -93,7 +95,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     override func viewWillDisappear(animated: Bool) {
         
         viewIsActive = false
-        pin.removeObserver(self, forKeyPath: "imagesLoaded")
+        pin.removeObserver(self, forKeyPath: "thumbnailsLoadedCount")
         super.viewWillDisappear(animated)
     }
     
@@ -157,19 +159,11 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
             presentViewController(vc, animated: true, completion: nil)
         }
     }
-    
-    // TODO: revisit with codedata
-    func getImageForURLPath(urlString: String, completion_handler: (UIImage?, String?) -> Void) {
-        
-//        HttpRequest.sharedInstance().getImageFromURLString(urlString) { webImage, errorStr in
-//            completion_handler(webImage, errorStr)
-//        }
-    }
-    
+
     @IBAction func newCollectionActionTouchUp(sender: UIButton) {
         print(">>> TODO action button")
     }
-    
+
     // MARK: delegate to process changes to Photo store
     
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
@@ -183,16 +177,22 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
             print(">>> UPDATING photo")
         }
     }
+
+    // MARK: KVO observer, a change in thumbnails count indicates a reload is required
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-        if keyPath == "imagesLoaded" {
+        if keyPath == "thumbnailsLoadedCount" {
             let value = change?[NSKeyValueChangeNewKey] as! Int
             print(">>> KVO: reloading, as image was added: \(value)")
             if !self.reloading {
                 self.reloading = true
                 dispatch_async(dispatch_get_main_queue()) {
+                    self.needToReloadData = false
                     self.collectionView.reloadData()
                     self.reloading = false
+                    if !self.needToReloadData {
+                        self.newCollectionButton.enabled = true
+                    }
                 }
             }
         } else {
@@ -205,7 +205,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     var sharedContext: NSManagedObjectContext {
         return CoreDataStackManager.sharedInstance().managedObjectContext
     }
-    
+
     lazy var fetchedResultsController: NSFetchedResultsController = {
         
         let request = NSFetchRequest(entityName: "Photo")
@@ -215,6 +215,5 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: request, managedObjectContext: CoreDataStackManager.sharedInstance().managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
         return fetchedResultsController
-        }()
-    
+    }()
 }
