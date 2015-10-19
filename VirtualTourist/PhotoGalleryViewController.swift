@@ -163,7 +163,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     // MARK: action button
 
     @IBAction func newCollectionActionTouchUp(sender: UIButton) {
-        print(">>> TODO action button")
+        print(">>> TODO action button - delete old images and photo info")
         newCollectionButton.enabled = false
         activityWheel.hidden = false
         pin.getPhotosForPin()

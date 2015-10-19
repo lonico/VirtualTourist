@@ -158,8 +158,8 @@
 			children = (
 				C00853D51BCF48040096A8B6 /* CoreDataStackManager.swift */,
 				C00853D71BCF488F0096A8B6 /* Pin.swift */,
-				C0B1522C1BD4B19400D0F966 /* Locality.swift */,
 				C00853D91BCF4C270096A8B6 /* Photo.swift */,
+				C0B1522C1BD4B19400D0F966 /* Locality.swift */,
 				C0BB1A4A1BCF746E002DE346 /* PhotoDB.swift */,
 				C0D24C071BD2106300EE023A /* ImageCache.swift */,
 				C0D426511BBBA46F00311C0F /* GeoExtensions.swift */,

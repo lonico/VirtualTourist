@@ -40,4 +40,7 @@ class Locality: NSManagedObject {
         self.pin = dictionary[Key.pin] as! Pin
     }
 
+    var fullname: String {
+        return [name, administrativeArea, country].joinWithSeparator(", ")
+    }
 }

@@ -50,7 +50,10 @@ class Pin: NSManagedObject {
             if let photos = photos {
                 for photo in photos {
                     var dictionary = photo
-                    // TODO: SANITIZE DICTIONARY
+                    // Sanitize dictionary
+                    dictionary[Photo.Key.title] = photo[Photo.Key.title] ?? ""
+                    dictionary[Photo.Key.url_m] = photo[Photo.Key.url_m] ?? ""
+                    dictionary[Photo.Key.url_t] = photo[Photo.Key.url_t] ?? ""
                     dictionary[Photo.Key.pin] = self
                     _ = Photo(dictionary: dictionary, context: self.sharedContext)
                     CoreDataStackManager.sharedInstance().saveContext()
