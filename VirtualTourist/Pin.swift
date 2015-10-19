@@ -81,7 +81,6 @@ class Pin: NSManagedObject {
     
     func incrementLoadedImageCount() {
         imagesLoaded++
-        didChangeValueForKey("imagesLoaded")
     }
     
     // MARK: coredata

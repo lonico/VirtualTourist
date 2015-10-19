@@ -13,5 +13,4 @@ struct PhotoDB {
     struct Cache {
         static let imageCache = ImageCache()
     }
-
 }

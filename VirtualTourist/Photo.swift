@@ -78,9 +78,7 @@ class Photo: NSManagedObject {
         if self.isLoadingTB {
             return
         }
-        
         self.isLoadingTB = true
-        
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0)) {
             HttpRequest.sharedInstance().getImageFromURLString(self.url_t) { image, strerror in
                 
@@ -103,9 +101,7 @@ class Photo: NSManagedObject {
         if self.isLoadingFI {
             return
         }
-        
         self.isLoadingFI = true
-        
         HttpRequest.sharedInstance().getImageFromURLString(self.url_m) { image, strerror in
                 
             if image != nil {

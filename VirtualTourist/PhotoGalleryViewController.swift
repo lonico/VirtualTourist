@@ -186,7 +186,8 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         if keyPath == "imagesLoaded" {
-            print(">>> KVO: reloading, as image was added")
+            let value = change?[NSKeyValueChangeNewKey] as! Int
+            print(">>> KVO: reloading, as image was added: \(value)")
             if !self.reloading {
                 self.reloading = true
                 dispatch_async(dispatch_get_main_queue()) {
