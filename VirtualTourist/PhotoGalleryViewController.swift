@@ -105,7 +105,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         // Dispose of any resources that can be recreated.
     }
 
-    // MARK: CollectionView data source delegates
+    // MARK: collectionView data source delegates
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
@@ -159,9 +159,15 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
             presentViewController(vc, animated: true, completion: nil)
         }
     }
+    
+    // MARK: action button
 
     @IBAction func newCollectionActionTouchUp(sender: UIButton) {
         print(">>> TODO action button")
+        newCollectionButton.enabled = false
+        activityWheel.hidden = false
+        pin.getPhotosForPin()
+        activityWheel.hidden = true
     }
 
     // MARK: delegate to process changes to Photo store
@@ -169,8 +175,9 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         switch type {
         case .Insert:
-            print(">>> INSERTING photo")
+            //print(">>> INSERTING photo")
             //self.collectionView.reloadData()
+            break
         case .Delete: break
         case .Move: break
         case .Update:
@@ -182,8 +189,8 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         if keyPath == "thumbnailsLoadedCount" {
-            let value = change?[NSKeyValueChangeNewKey] as! Int
-            print(">>> KVO: reloading, as image was added: \(value)")
+            //let value = change?[NSKeyValueChangeNewKey] as! Int
+            //print(">>> KVO: reloading, as image was added: \(value)")
             if !self.reloading {
                 self.reloading = true
                 dispatch_async(dispatch_get_main_queue()) {

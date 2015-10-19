@@ -108,6 +108,7 @@ struct FlickrAPI {
                             /* Flickr API - will only return up the 4000 images (100 per page * 40 page max) */
                             let pageLimit = min(totalPages, 40)
                             let randomPage = Int(arc4random_uniform(UInt32(pageLimit))) + 1
+                            print(">>> Random page: \(randomPage)")
                             FlickrAPI.getPhotosFromFlickrBySearchWithPage(searchMethodArguments, pageNumber: randomPage) { photos, error in
                                 
                                 if let error = error {
