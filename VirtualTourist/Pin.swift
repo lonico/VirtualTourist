@@ -17,9 +17,10 @@ class Pin: NSManagedObject {
     @NSManaged var latitude: Double
     @NSManaged var longitude: Double
     @NSManaged var photos: [Photo]
-    @NSManaged var locality: Locality
+    @NSManaged var locality: Locality?
+    var annotation: MKPointAnnotation?
     var arePhotosLoading: Bool = false
-    var errorStr: String! = nil
+    var errorStr: String? = nil
     dynamic var thumbnailsLoadedCount = 0
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
@@ -33,7 +34,10 @@ class Pin: NSManagedObject {
         
         latitude = coordinate.latitude
         longitude = coordinate.longitude
+        locality = nil
+        annotation = nil
         arePhotosLoading = false
+        // asynchronously fetch location
         GeoCoder.getLocationForPin(self)
     }
     
@@ -78,7 +82,12 @@ class Pin: NSManagedObject {
                 sleep(1)
                 sleeptime++
                 if sleeptime > 60 {
-                    self.errorStr + "\nTime out when loading pictures"
+                    if self.errorStr == nil {
+                        self.errorStr = ""
+                    } else {
+                        self.errorStr! += "\n"
+                    }
+                    self.errorStr! += "Time out when loading pictures"
                     break
                 }
             }

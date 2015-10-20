@@ -42,6 +42,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
                 annotation.updateCoordinateAndTitle(pin.latitude, longitude: pin.longitude)
                 mapView.addAnnotation(annotation)
                 pins[annotation] = pin
+                pin.annotation = annotation
             }
         }
     }
@@ -83,6 +84,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             let pin = Pin(coordinate: currentAnnotation.coordinate, context: sharedContext)
             CoreDataStackManager.sharedInstance().saveContext()
             pins[currentAnnotation] = pin
+            pin.annotation = currentAnnotation
             // let's proactively search pictures in flickr
             // error reporting will be done when the results are needed in collectionView
             pin.getPhotosForPin()
@@ -142,7 +144,14 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             print(">>> INSERTING pin")
         case .Delete: break
         case .Move: break
-        case .Update: break
+        case .Update:
+            // locality or [photo] update (mostly photo)
+            print(">>> Updating pin")
+            if let pin = anObject as? Pin {
+                if pin.locality != nil {
+                    pin.annotation!.setLocalityAndCoordTitles(pin.locality!)
+                }
+            }
         }
     }
     

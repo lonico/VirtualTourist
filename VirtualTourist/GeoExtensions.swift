@@ -104,4 +104,9 @@ extension MKPointAnnotation {
         self.coordinate = coordinate
         self.title = self.coordinate.coord2text()
     }
+    
+    func setLocalityAndCoordTitles(locality: Locality) {
+        self.title = locality.fullname
+        self.subtitle = self.coordinate.coord2text()
+    }
 }
