@@ -146,12 +146,13 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         case .Move: break
         case .Update:
             // locality or [photo] update (mostly photo)
-            print(">>> Updating pin")
-            if let pin = anObject as? Pin {
-                if pin.locality != nil {
-                    pin.annotation!.setLocalityAndCoordTitles(pin.locality!)
-                }
-            }
+//            print(">>> Updating pin")
+//            if let pin = anObject as? Pin {
+//                if pin.locality != nil {
+//                    pin.annotation!.setLocalityAndCoordTitles(pin.locality!)
+//                }
+//            }
+            break
         }
     }
     

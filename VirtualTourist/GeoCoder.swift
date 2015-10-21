@@ -39,7 +39,8 @@ struct GeoCoder {
                 errorStr = "Reverse geocoding error: no data received"
                 print(errorStr)
             }
-            _ = Locality(dictionary: dictionary, context: sharedContext)
+            let locality = Locality(dictionary: dictionary, context: sharedContext)
+            pin.annotation!.setLocalityAndCoordTitles(locality)
             CoreDataStackManager.sharedInstance().saveContext()
         }
     }

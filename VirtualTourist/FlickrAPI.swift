@@ -97,7 +97,7 @@ struct FlickrAPI {
             var photosDict: [[String: AnyObject]]? = nil
             var errorStr: String? = nil
             if let error = error {
-                errorStr = "Could not complete the request:\n \(error.localizedDescription)"
+                errorStr = "Could not complete the request for \(urlString): \(error.localizedDescription)"
                 print(errorStr)
                 completion_handler(photosDict, errorStr)
             } else {
@@ -113,7 +113,7 @@ struct FlickrAPI {
                             FlickrAPI.getPhotosFromFlickrBySearchWithPage(searchMethodArguments, pageNumber: randomPage) { photos, error in
                                 
                                 if let error = error {
-                                    errorStr = "Could not complete the request:\n \(error)"
+                                    errorStr = "Could not complete the request: \(error)"
                                     print(errorStr)
                                 } else if let photos = photos {
                                     photosDict = photos
@@ -154,7 +154,7 @@ struct FlickrAPI {
             var shuffledPics: [[String: AnyObject]]? = nil
             var errorStr: String? = nil
             if let error = error {
-                errorStr = "Could not complete the request \(error)"
+                errorStr = "Could not complete the request for \(urlString): \(error)"
                 print(errorStr)
             } else {
                 do {

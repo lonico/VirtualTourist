@@ -43,6 +43,11 @@ class ImageCache {
     func storeImageForURL(image: UIImage?, withIdentifier identifier: String) {
         let path = pathForIdentifier(identifier)
         
+        // If the identifier is empty, return
+        if identifier == "" {
+            return
+        }
+        
         // If the image is nil, remove images from the cache
         if image == nil {
             inMemoryCache.removeObjectForKey(path)

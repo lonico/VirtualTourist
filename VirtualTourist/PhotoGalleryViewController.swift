@@ -51,6 +51,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
                 dispatch_async(dispatch_get_main_queue()) {
                     self.noImageLabel.hidden = false
                     self.activityWheel.stopAnimating()
+                    self.newCollectionButton.enabled = true
                 }
             } else {
                 dispatch_async(dispatch_get_main_queue()) {
@@ -164,10 +165,30 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
 
     @IBAction func newCollectionActionTouchUp(sender: UIButton) {
         print(">>> TODO action button - delete old images and photo info")
-        newCollectionButton.enabled = false
-        activityWheel.hidden = false
+        activityWheel.startAnimating()
+        noImageLabel.hidden = true
+        deletePhotos()
+        self.newCollectionButton.enabled = false
         pin.getPhotosForPin()
-        activityWheel.hidden = true
+        // wait for flickr photos to be fetched, and take action
+        pin.getPhotoCount() { count, errorStr in
+            if let errorStr = errorStr {
+                let alert = AlertController.Alert(msg: errorStr, title: AlertController.AlertTitle.OpenURLError) { action in
+                    self.activityWheel.stopAnimating()
+                }
+                alert.dispatchAlert(self)
+            } else if count == 0 {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.noImageLabel.hidden = false
+                    self.activityWheel.stopAnimating()
+                    self.newCollectionButton.enabled = true
+                }
+            } else {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.activityWheel.stopAnimating()
+                }
+            }
+        }
     }
 
     // MARK: delegate to process changes to Photo store
@@ -181,7 +202,9 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         case .Delete: break
         case .Move: break
         case .Update:
-            print(">>> UPDATING photo")
+            if let photo = anObject as? Photo {
+                print(">>> UPDATING photo: isLoaded=\(photo.thumbNail_status.isLoaded)")
+            }
         }
     }
 
@@ -198,7 +221,13 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
                     self.collectionView.reloadData()
                     self.reloading = false
                     if !self.needToReloadData {
-                        self.newCollectionButton.enabled = true
+                        let photos = self.fetchedResultsController.fetchedObjects as! [Photo]
+                        for photo in photos {
+                            if photo.thumbNail_status.isLoading {
+                                break
+                            }
+                            self.newCollectionButton.enabled = true
+                        }
                     }
                 }
             }
@@ -208,6 +237,19 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     }
 
     // MARK: coredata
+    
+    func deletePhotos() {
+        
+        let photos = fetchedResultsController.fetchedObjects as! [Photo]
+        for photo in photos {
+            // delete images from cache and disk
+            photo.thumbNail = nil
+            photo.fullImage = nil
+            // delete the photo object
+            sharedContext.deleteObject(photo)
+        }
+        CoreDataStackManager.sharedInstance().saveContext()
+    }
     
     var sharedContext: NSManagedObjectContext {
         return CoreDataStackManager.sharedInstance().managedObjectContext

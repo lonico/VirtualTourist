@@ -45,7 +45,7 @@ class HttpRequest {
             var image: UIImage? = nil
             var errorStr: String? = nil
             if let error = error {
-                errorStr = "Could not complete the request:\n \(error.localizedDescription)"
+                errorStr = "Could not complete the request for \(urlString): \(error.localizedDescription)"
                 print(errorStr)
             } else {
                 if let imageData = data {

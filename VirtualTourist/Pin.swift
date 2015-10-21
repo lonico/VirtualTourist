@@ -53,14 +53,16 @@ class Pin: NSManagedObject {
             
             if let photos = photos {
                 for photo in photos {
-                    var dictionary = photo
+                    var dictionary = [String:AnyObject]()
                     // Sanitize dictionary
                     dictionary[Photo.Key.title] = photo[Photo.Key.title] ?? ""
                     dictionary[Photo.Key.url_m] = photo[Photo.Key.url_m] ?? ""
-                    dictionary[Photo.Key.url_t] = photo[Photo.Key.url_t] ?? ""
-                    dictionary[Photo.Key.pin] = self
-                    _ = Photo(dictionary: dictionary, context: self.sharedContext)
-                    CoreDataStackManager.sharedInstance().saveContext()
+                    dictionary[Photo.Key.url_t] = photo[Photo.Key.url_t]
+                    if dictionary[Photo.Key.url_t] != nil {
+                        dictionary[Photo.Key.pin] = self
+                        _ = Photo(dictionary: dictionary, context: self.sharedContext)
+                        CoreDataStackManager.sharedInstance().saveContext()
+                    }
                 }
                 print(">>> pin photo count: \(photos.count)")
             } else if let errorStr = errorStr {
@@ -97,6 +99,19 @@ class Pin: NSManagedObject {
     
     func incrementLoadedThumbnailsCount() {
         thumbnailsLoadedCount++
+    }
+    
+    func deletePhotos() {
+        let photos_array = self.photos
+        _ = photos_array.map {
+            // remove images from cache and disk
+            print("deleting photo")
+            $0.thumbNail = nil
+            $0.fullImage = nil
+            self.sharedContext.deleteObject($0)
+        }
+        print(">>> done with images: \(photos.count)")
+        //photos.removeAll()
     }
     
     // MARK: coredata
