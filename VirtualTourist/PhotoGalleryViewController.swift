@@ -40,10 +40,10 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
             defaultImage = UIImage(named: "VirtualTourist_120")
         }
         
-        // wait for flickr photos to be fetched, and take action
+        // Wait for flickr photos to be fetched on internet, if any, and take action
         updateViewOncePhotosAreFetched(true)
         
-        // Step 2: Perform the fetch
+        // Fetch photos for pin in coredata
         do {
             try fetchedResultsController.performFetch()
         } catch let error as NSError {
@@ -52,13 +52,15 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         
         print("Fetched results: \(fetchedResultsController.fetchedObjects?.count)")
         
-        // Step 6: Set the delegate to this view controller
+        // TODO: Set the delegate to this view controller
         fetchedResultsController.delegate = self
 
+        // Show map and pin
         let region = MKCoordinateRegion(center: (pinView.annotation?.coordinate)!, span: span)
         mapView.setRegion(region, animated: true)
         mapView.addAnnotation(pinView.annotation!)
         
+        // Observe changes to pin.thumbnailsLoadedCount, it indicates an image is loaded
         pin.addObserver(self, forKeyPath: "thumbnailsLoadedCount", options: NSKeyValueObservingOptions.New, context: nil) //&observer_context)
         }
 
@@ -140,9 +142,11 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
 
     @IBAction func newCollectionActionTouchUp(sender: UIButton) {
         print(">>> TODO action button - delete old images and photo info")
-        activityWheel.startAnimating()
-        noImageLabel.hidden = true
-        deletePhotos()
+        dispatch_async(dispatch_get_main_queue()) {
+            self.activityWheel.startAnimating()
+            self.noImageLabel.hidden = true
+            self.deletePhotos()
+        }
         newCollectionButton.enabled = false
         pin.getPhotosForPin()
         updateViewOncePhotosAreFetched(false)
@@ -170,20 +174,24 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
                     self.activityWheel.stopAnimating()
                     if (initView) {
                         // the images may already be loaded when viewDidLoad is called
-                        self.reloading = true
-                        self.needToReloadData = false
-                        self.collectionView.reloadData()
-                        self.reloading = false
-                        if !self.needToReloadData && !self.loadingInProgress() {
-                            self.newCollectionButton.enabled = true
-                        }
-                    // Otherwise, KVO events will be triggered
+                        self.reloadCollectionView()
                     }
+                    // Otherwise, KVO events will be triggered
                 }
             }
         }
     }
+    
+    func reloadCollectionView() {
+        self.reloading = true
+        self.needToReloadData = false
+        self.collectionView.reloadData()
+        self.reloading = false
+        if !self.needToReloadData && !self.loadingInProgress() {
+            self.newCollectionButton.enabled = true
+        }
 
+    }
     
     // MARK: delegate to process changes to Photo store
     
@@ -209,14 +217,8 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
             let value = change?[NSKeyValueChangeNewKey] as! Int
             print(">>> KVO: reloading, as image was added: \(value)")
             if !self.reloading {
-                self.reloading = true
                 dispatch_async(dispatch_get_main_queue()) {
-                    self.needToReloadData = false
-                    self.collectionView.reloadData()
-                    self.reloading = false
-                    if !self.needToReloadData && !self.loadingInProgress() {
-                        self.newCollectionButton.enabled = true
-                    }
+                    self.reloadCollectionView()
                 }
             }
         } else {
@@ -236,6 +238,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
             // delete the photo object
             sharedContext.deleteObject(photo)
         }
+        
         CoreDataStackManager.sharedInstance().saveContext()
     }
     
