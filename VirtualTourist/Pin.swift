@@ -60,8 +60,10 @@ class Pin: NSManagedObject {
                     dictionary[Photo.Key.url_t] = photo[Photo.Key.url_t]
                     if dictionary[Photo.Key.url_t] != nil {
                         dictionary[Photo.Key.pin] = self
-                        _ = Photo(dictionary: dictionary, context: self.sharedContext)
-                        CoreDataStackManager.sharedInstance().saveContext()
+                        dispatch_async(dispatch_get_main_queue()) {
+                            _ = Photo(dictionary: dictionary, context: self.sharedContext)
+                            CoreDataStackManager.sharedInstance().saveContext()
+                        }
                     }
                 }
                 print(">>> pin photo count: \(photos.count)")

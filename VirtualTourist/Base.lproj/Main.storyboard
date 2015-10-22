@@ -227,7 +227,7 @@
                                 <animations/>
                                 <gestureRecognizers/>
                                 <connections>
-                                    <outletCollection property="gestureRecognizers" destination="wnh-oi-zmB" appends="YES" id="mYa-dq-b7y"/>
+                                    <outletCollection property="gestureRecognizers" destination="wnh-oi-zmB" appends="YES" id="DPl-rt-4Hn"/>
                                 </connections>
                             </imageView>
                             <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="cd7-Nu-MLX">
@@ -238,6 +238,7 @@
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="kVX-c0-nZH" firstAttribute="leading" secondItem="GdA-4g-wcX" secondAttribute="leadingMargin" id="8cY-zH-oX2"/>
                             <constraint firstItem="cd7-Nu-MLX" firstAttribute="centerX" secondItem="kVX-c0-nZH" secondAttribute="centerX" id="9FV-jM-ix2"/>

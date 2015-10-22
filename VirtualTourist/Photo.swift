@@ -109,8 +109,17 @@ class Photo: NSManagedObject {
     func getFullImageFromUrl(completion_handler: (image: UIImage!, sterror: String!) -> Void) {
         
         if fullImage_status.isLoading {
+            completion_handler(image: nil, sterror: "loading")
             return
         }
+        
+        if self.url_m == "" {
+            let errorStr = "Empty URL for image"
+            print(errorStr)
+            completion_handler(image: nil, sterror: errorStr)
+            return
+        }
+        
         fullImage_status.isLoading = true
         HttpRequest.sharedInstance().getImageFromURLString(self.url_m) { image, strerror in
                 
@@ -118,6 +127,7 @@ class Photo: NSManagedObject {
                 self.fullImage = image!
                 self.fullImage_status.isLoaded = true
             } else if strerror != nil {
+                print("\(__FUNCTION__): I was here")
                 print(strerror)
             } else {
                 print("Unexpected error in \(__FUNCTION__): getImageFromURLString")

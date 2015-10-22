@@ -35,13 +35,17 @@ struct GeoCoder {
                 dictionary[Locality.Key.name] = placemark.locality ?? ""
                 dictionary[Locality.Key.administrativeArea] = placemark.administrativeArea ?? ""
                 dictionary[Locality.Key.country] = placemark.country ?? ""
+                dictionary[Locality.Key.pin] = pin
             } else {
                 errorStr = "Reverse geocoding error: no data received"
                 print(errorStr)
             }
-            let locality = Locality(dictionary: dictionary, context: sharedContext)
-            pin.annotation!.setLocalityAndCoordTitles(locality)
-            CoreDataStackManager.sharedInstance().saveContext()
+            
+            dispatch_async(dispatch_get_main_queue()) {
+                let locality = Locality(dictionary: dictionary, context: sharedContext)
+                pin.annotation!.setLocalityAndCoordTitles(locality)
+                CoreDataStackManager.sharedInstance().saveContext()
+            }
         }
     }
     

@@ -41,31 +41,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         }
         
         // wait for flickr photos to be fetched, and take action
-        pin.getPhotoCount() { count, errorStr in
-            if let errorStr = errorStr {
-                let alert = AlertController.Alert(msg: errorStr, title: AlertController.AlertTitle.OpenURLError) { action in
-                    self.activityWheel.stopAnimating()
-                }
-                alert.dispatchAlert(self)
-            } else if count == 0 {
-                dispatch_async(dispatch_get_main_queue()) {
-                    self.noImageLabel.hidden = false
-                    self.activityWheel.stopAnimating()
-                    self.newCollectionButton.enabled = true
-                }
-            } else {
-                dispatch_async(dispatch_get_main_queue()) {
-                    self.activityWheel.stopAnimating()
-                    self.reloading = true
-                    self.needToReloadData = false
-                    self.collectionView.reloadData()
-                    self.reloading = false
-                    if !self.needToReloadData {
-                        self.newCollectionButton.enabled = true
-                    }
-                }
-            }
-        }
+        updateViewOncePhotosAreFetched(true)
         
         // Step 2: Perform the fetch
         do {
@@ -89,23 +65,19 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     override func viewWillAppear(animated: Bool) {
         
         navigationController?.navigationBarHidden = false
-        newCollectionButton.enabled = false
         viewIsActive = true
+        if !self.needToReloadData && !self.loadingInProgress() {
+            self.newCollectionButton.enabled = true
+        }
+
     }
     
     override func viewWillDisappear(animated: Bool) {
         
         viewIsActive = false
-        pin.removeObserver(self, forKeyPath: "thumbnailsLoadedCount")
         super.viewWillDisappear(animated)
     }
     
-    override func didReceiveMemoryWarning() {
-        
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
     // MARK: collectionView data source delegates
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -147,17 +119,20 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
                             vc.refresh_image()
                         }
                     } else {
-                        let alert = AlertController.Alert(msg: errorStr, title: AlertController.AlertTitle.OpenURLError) { action in
-                            vc.dismissViewControllerAnimated(true, completion: nil)
+                        print("\(__FUNCTION__): I was here")
+                        dispatch_async(dispatch_get_main_queue()) {
+                            vc.errorStr = errorStr
+                            vc.show_alert()
                         }
-                        alert.dispatchAlert(vc)
                     }
                 }
             } else {
                 vc.photoImage = image
             }
             viewIsActive = false
-            presentViewController(vc, animated: true, completion: nil)
+            dispatch_async(dispatch_get_main_queue()) {
+                self.presentViewController(vc, animated: true, completion: nil)
+            }
         }
     }
     
@@ -168,8 +143,12 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         activityWheel.startAnimating()
         noImageLabel.hidden = true
         deletePhotos()
-        self.newCollectionButton.enabled = false
+        newCollectionButton.enabled = false
         pin.getPhotosForPin()
+        updateViewOncePhotosAreFetched(false)
+    }
+
+    func updateViewOncePhotosAreFetched(initView: Bool) {
         // wait for flickr photos to be fetched, and take action
         pin.getPhotoCount() { count, errorStr in
             if let errorStr = errorStr {
@@ -181,16 +160,31 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
                 dispatch_async(dispatch_get_main_queue()) {
                     self.noImageLabel.hidden = false
                     self.activityWheel.stopAnimating()
-                    self.newCollectionButton.enabled = true
+                    if !self.needToReloadData && !self.loadingInProgress() {
+                        self.newCollectionButton.enabled = true
+                    }
+                    
                 }
             } else {
                 dispatch_async(dispatch_get_main_queue()) {
                     self.activityWheel.stopAnimating()
+                    if (initView) {
+                        // the images may already be loaded when viewDidLoad is called
+                        self.reloading = true
+                        self.needToReloadData = false
+                        self.collectionView.reloadData()
+                        self.reloading = false
+                        if !self.needToReloadData && !self.loadingInProgress() {
+                            self.newCollectionButton.enabled = true
+                        }
+                    // Otherwise, KVO events will be triggered
+                    }
                 }
             }
         }
     }
 
+    
     // MARK: delegate to process changes to Photo store
     
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
@@ -212,22 +206,16 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         if keyPath == "thumbnailsLoadedCount" {
-            //let value = change?[NSKeyValueChangeNewKey] as! Int
-            //print(">>> KVO: reloading, as image was added: \(value)")
+            let value = change?[NSKeyValueChangeNewKey] as! Int
+            print(">>> KVO: reloading, as image was added: \(value)")
             if !self.reloading {
                 self.reloading = true
                 dispatch_async(dispatch_get_main_queue()) {
                     self.needToReloadData = false
                     self.collectionView.reloadData()
                     self.reloading = false
-                    if !self.needToReloadData {
-                        let photos = self.fetchedResultsController.fetchedObjects as! [Photo]
-                        for photo in photos {
-                            if photo.thumbNail_status.isLoading {
-                                break
-                            }
-                            self.newCollectionButton.enabled = true
-                        }
+                    if !self.needToReloadData && !self.loadingInProgress() {
+                        self.newCollectionButton.enabled = true
                     }
                 }
             }
@@ -249,6 +237,18 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
             sharedContext.deleteObject(photo)
         }
         CoreDataStackManager.sharedInstance().saveContext()
+    }
+    
+    func loadingInProgress() -> Bool {
+        let photos = self.fetchedResultsController.fetchedObjects as! [Photo]
+        var isLoading = false
+        for photo in photos {
+            if photo.thumbNail_status.isLoading {
+                isLoading = true
+                break
+            }
+        }
+        return isLoading
     }
     
     var sharedContext: NSManagedObjectContext {

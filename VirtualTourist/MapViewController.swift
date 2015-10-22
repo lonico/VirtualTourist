@@ -40,6 +40,9 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
                 print(">>> adding pin")
                 let annotation = MKPointAnnotation()
                 annotation.updateCoordinateAndTitle(pin.latitude, longitude: pin.longitude)
+                if (pin.locality != nil) {
+                    annotation.setLocalityAndCoordTitles(pin.locality!)
+                }
                 mapView.addAnnotation(annotation)
                 pins[annotation] = pin
                 pin.annotation = annotation
