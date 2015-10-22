@@ -33,8 +33,8 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         print(">>> PhotoGallery: ViewDidLoad")
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        self.noImageLabel.hidden = true
-        self.activityWheel.startAnimating()
+        noImageLabel.hidden = true
+        activityWheel.startAnimating()
         
         if defaultImage == nil {
             defaultImage = UIImage(named: "VirtualTourist_120")
@@ -68,8 +68,8 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         
         navigationController?.navigationBarHidden = false
         viewIsActive = true
-        if !self.needToReloadData && !self.loadingInProgress() {
-            self.newCollectionButton.enabled = true
+        if !needToReloadData && !loadingInProgress() {
+            newCollectionButton.enabled = true
         }
 
     }
