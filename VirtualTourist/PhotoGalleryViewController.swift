@@ -27,7 +27,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     var defaultImage: UIImage? = nil
     var needToReloadData = false
     var reloading = false
-    var dontEnableNewCollectionButton = false
+    var dontEnableActions = false
     
     // if false full image is displayed on selection
     var deleteOnSelection = true
@@ -40,7 +40,6 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         // Do any additional setup after loading the view.
         noImageLabel.hidden = true
         activityWheel.startAnimating()
-        newCollectionButton.enabled = false
         
         if defaultImage == nil {
             defaultImage = UIImage(named: "VirtualTourist_120")
@@ -124,9 +123,12 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         print(">>> selected Cell")
         let cell = collectionView.cellForItemAtIndexPath(indexPath) as! CollectionViewCell
         if deleteOnSelection {
-            cell.photo?.deletePhoto()
-        } else {
+            cell.photo?.deletePhoto(true)
+        } else if newCollectionButton.enabled {
+            // only switch to new controller if all images are loaded
             showFullImage(cell.photo)
+        } else {
+            AlertController.Alert(msg: "Can't display details while images are loading", title: "").dispatchAlert(self)
         }
     }
     
@@ -167,7 +169,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         print(">>> TODO action button - delete old images and photo info")
         dispatch_async(dispatch_get_main_queue()) {
             self.newCollectionButton.enabled = false
-            self.dontEnableNewCollectionButton = true
+            self.dontEnableActions = true
             self.activityWheel.startAnimating()
             self.noImageLabel.hidden = true
             self.deletePhotos()
@@ -201,7 +203,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
                 dispatch_async(dispatch_get_main_queue()) {
                     self.noImageLabel.hidden = false
                     self.activityWheel.stopAnimating()
-                    self.dontEnableNewCollectionButton = false
+                    self.dontEnableActions = false
                     if !self.needToReloadData && !self.loadingInProgress() {
                         self.newCollectionButton.enabled = true
                     }
@@ -209,7 +211,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
             } else {
                 dispatch_async(dispatch_get_main_queue()) {
                     self.activityWheel.stopAnimating()
-                    self.dontEnableNewCollectionButton = false
+                    self.dontEnableActions = false
                     if (initView) {
                         // the images may already be loaded when viewDidLoad is called
                         self.reloadCollectionView()
@@ -225,7 +227,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         self.needToReloadData = false
         self.collectionView.reloadData()
         self.reloading = false
-        if !self.needToReloadData && !self.dontEnableNewCollectionButton && !self.loadingInProgress() {
+        if !self.needToReloadData && !self.dontEnableActions && !self.loadingInProgress() {
             self.newCollectionButton.enabled = true
         }
     }
@@ -275,11 +277,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         dispatch_async(dispatch_get_main_queue()) {
             let photos = self.fetchedResultsController.fetchedObjects as! [Photo]
             for photo in photos {
-                // delete images from cache and disk
-                photo.thumbNail = nil
-                photo.fullImage = nil
-                // delete the photo object
-                self.sharedContext.deleteObject(photo)
+                photo.deletePhoto(false)
             }
             CoreDataStackManager.sharedInstance().saveContext()
         }
