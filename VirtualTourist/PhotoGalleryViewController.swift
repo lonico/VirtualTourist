@@ -29,13 +29,12 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     var reloading = false
     var dontEnableActions = false
     
-    // if false full image is displayed on selection
+    // if false, full image is displayed on selection
     var deleteOnSelection = true
 
     // MARK: view life cycle
     override func viewDidLoad() {
         
-        print(">>> PhotoGallery: ViewDidLoad")
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         noImageLabel.hidden = true
@@ -45,29 +44,26 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
             defaultImage = UIImage(named: "VirtualTourist_120")
         }
         
-        // Wait for flickr photos to be fetched on internet, if any, and take action
-        // pin.getPhotosForPin()
+        // Asynchronously wait for flickr photo fetches on internet, if any, and take action
         updateViewOncePhotosAreFetched(true)
         
+        // Fetch photos for pin in coredata
         sharedContext.performBlockAndWait {
-            // Fetch photos for pin in coredata
             do {
                 try self.fetchedResultsController.performFetch()
             } catch let error as NSError {
-                print("fetch error: \(error.localizedDescription)")
+                print("ERROR: fetch: \(error.localizedDescription)")
             }
-            
-            print("Fetched results: \(self.fetchedResultsController.fetchedObjects?.count)")
+            print(">>> Fetched results: \(self.fetchedResultsController.fetchedObjects?.count)")
         }
         
         // Set the delegate to this view controller
         fetchedResultsController.delegate = self
 
-        // Show map and pin
+        // Show small map and pin
         let region = MKCoordinateRegion(center: (pinView.annotation?.coordinate)!, span: span)
         mapView.setRegion(region, animated: true)
         mapView.addAnnotation(pinView.annotation!)
-        
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -77,8 +73,9 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         viewIsActive = true
         
         // Observe changes to pin.thumbnailsLoadedCount, it indicates an image is loaded
-        pin.addObserver(self, forKeyPath: "thumbnailsLoadedCount", options: NSKeyValueObservingOptions.New, context: nil) //&observer_context)
+        pin.addObserver(self, forKeyPath: "thumbnailsLoadedCount", options: NSKeyValueObservingOptions.New, context: nil)
         
+        // Don't enable the button only all photos and all thumbnails are loaded
         if !self.needToReloadData && !self.loadingInProgress() {
             self.newCollectionButton.enabled = true
         }
@@ -137,24 +134,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         
         if photo != nil {
             let vc = storyboard?.instantiateViewControllerWithIdentifier("PhotoFullViewController") as! PhotoFullViewController
-            let image = photo!.fullImage
-            if image == nil {
-                photo!.getFullImageFromUrl() { image, errorStr in
-                    if image != nil {
-                        dispatch_async(dispatch_get_main_queue()) {
-                            vc.photoImage = image
-                            vc.refresh_image()
-                        }
-                    } else {
-                        dispatch_async(dispatch_get_main_queue()) {
-                            vc.errorStr = errorStr
-                            vc.show_alert()
-                        }
-                    }
-                }
-            } else {
-                vc.photoImage = image
-            }
+            vc.photo = photo
             viewIsActive = false
             dispatch_async(dispatch_get_main_queue()) {
                 self.presentViewController(vc, animated: true, completion: nil)
@@ -162,7 +142,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         }
     }
     
-    // MARK: action button
+    // MARK: action buttons
 
     @IBAction func newCollectionActionTouchUp(sender: UIButton) {
         

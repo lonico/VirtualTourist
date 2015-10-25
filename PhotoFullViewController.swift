@@ -12,15 +12,30 @@ class PhotoFullViewController: UIViewController {
     
     @IBOutlet var imageView: UIImageView!
     @IBOutlet var activityIndicator: UIActivityIndicatorView!
+    var photo: Photo!
     var photoImage = UIImage?()
     var errorStr: String? = nil
     
     override func viewWillAppear(animated: Bool) {
         
-        if photoImage != nil {
-            refresh_image()
-        } else if errorStr != nil {
-            show_alert()
+        let image = photo!.fullImage
+        if image == nil {
+            photo!.getFullImageFromUrl() { image, errorStr in
+                if image != nil {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.photoImage = image
+                        self.refresh_image()
+                    }
+                } else {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.errorStr = errorStr
+                        self.show_alert()
+                    }
+                }
+            }
+        } else {
+            self.photoImage = image
+            self.refresh_image()
         }
         super.viewWillAppear(true)
     }
@@ -30,6 +45,8 @@ class PhotoFullViewController: UIViewController {
         
         self.dismissViewControllerAnimated(true, completion: nil)
     }
+    
+    // MARK: UI Uupdates
     
     func refresh_image() {
         
