@@ -49,6 +49,7 @@ class Pin: NSManagedObject {
     func getPhotosForPin() {
         
         arePhotosLoading = true
+        thumbnailsLoadedCount = 0
         errorStr = nil
         FlickrAPI.getPhotosFromFlickrForCoordinate(coordinate) { photos, errorStr in
             

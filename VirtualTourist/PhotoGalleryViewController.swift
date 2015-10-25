@@ -124,7 +124,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         print(">>> selected Cell")
         let cell = collectionView.cellForItemAtIndexPath(indexPath) as! CollectionViewCell
         if deleteOnSelection {
-            self.deletePhoto(cell.photo)
+            cell.photo?.deletePhoto()
         } else {
             showFullImage(cell.photo)
         }
@@ -269,18 +269,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     }
     
     // MARK: coredata
-    
-    func deletePhoto(photo: Photo?) {
         
-        if photo != nil {
-                photo!.thumbNail = nil
-                photo!.fullImage = nil
-                // delete the photo object
-                self.sharedContext.deleteObject(photo!)
-                CoreDataStackManager.sharedInstance().saveContext()
-        }
-    }
-    
     func deletePhotos() {
         
         dispatch_async(dispatch_get_main_queue()) {

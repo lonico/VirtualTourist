@@ -147,5 +147,17 @@ class Photo: NSManagedObject {
     var sharedContext: NSManagedObjectContext {
         return CoreDataStackManager.sharedInstance().managedObjectContext
     }
+    
+    func deletePhoto() {
+        
+        self.sharedContext.performBlockAndWait {
+            self.thumbNail = nil
+            self.fullImage = nil
+            // delete the photo object
+            self.sharedContext.deleteObject(self)
+            CoreDataStackManager.sharedInstance().saveContext()
+        }
+    }
+
 }
 
