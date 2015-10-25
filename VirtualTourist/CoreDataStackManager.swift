@@ -21,7 +21,6 @@ private let SQLITE_FILE_NAME = "VirtualTourist.sqlite"
 
 class CoreDataStackManager {
     
-    
     // MARK: - Shared Instance
     
     /**
@@ -32,7 +31,6 @@ class CoreDataStackManager {
         struct Static {
             static let instance = CoreDataStackManager()
         }
-    
         return Static.instance
     }
     
@@ -41,7 +39,6 @@ class CoreDataStackManager {
     lazy var applicationDocumentsDirectory: NSURL = {
         
         print("Instantiating the applicationDocumentsDirectory property")
-        
         let urls = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
         return urls[urls.count-1]
     }()
@@ -50,7 +47,6 @@ class CoreDataStackManager {
         // The managed object model for the application. This property is not optional. It is a fatal error for the application not to be able to find and load its model.
 
         print("Instantiating the managedObjectModel property")
-        
         let modelURL = NSBundle.mainBundle().URLForResource("VirtualTourist", withExtension: "momd")!
         return NSManagedObjectModel(contentsOfURL: modelURL)!
     }()
@@ -75,9 +71,7 @@ class CoreDataStackManager {
         
         let coordinator: NSPersistentStoreCoordinator? = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
         let url = self.applicationDocumentsDirectory.URLByAppendingPathComponent(SQLITE_FILE_NAME)
-        
         print("sqlite path: \(url.path!)")
-        
         var failureReason = "There was an error creating or loading the application's saved data."
         do {
             try coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: nil)
@@ -86,7 +80,6 @@ class CoreDataStackManager {
             var dict = [String: AnyObject]()
             dict[NSLocalizedDescriptionKey] = "Failed to initialize the application's saved data"
             dict[NSLocalizedFailureReasonErrorKey] = failureReason
-            
             dict[NSUnderlyingErrorKey] = error as NSError
             let wrappedError = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9999, userInfo: dict)
             // Replace this with code to handle the error appropriately.
@@ -94,7 +87,6 @@ class CoreDataStackManager {
             NSLog("Unresolved error \(wrappedError), \(wrappedError.userInfo)")
             abort()
         }
-        
         return coordinator
     }()
     

@@ -23,7 +23,6 @@ class HttpRequest {
         let task = session.dataTaskWithRequest(request) { data, response, error in
             completion_handler(data, error)
         }
-        
         task.resume()
     }
     

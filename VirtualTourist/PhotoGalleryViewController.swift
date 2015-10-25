@@ -19,6 +19,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     @IBOutlet var activityWheel: UIActivityIndicatorView!
     @IBOutlet var noImageLabel: UILabel!
     @IBOutlet var newCollectionButton: UIButton!
+    @IBOutlet var deleteButton: UIBarButtonItem!
     
     var pinView: MKPinAnnotationView!
     var pin: Pin!
@@ -26,6 +27,10 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     var defaultImage: UIImage? = nil
     var needToReloadData = false
     var reloading = false
+    var dontEnableNewCollectionButton = false
+    
+    // if false full image is displayed on selection
+    var deleteOnSelection = true
 
     // MARK: view life cycle
     override func viewDidLoad() {
@@ -35,24 +40,28 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         // Do any additional setup after loading the view.
         noImageLabel.hidden = true
         activityWheel.startAnimating()
+        newCollectionButton.enabled = false
         
         if defaultImage == nil {
             defaultImage = UIImage(named: "VirtualTourist_120")
         }
         
         // Wait for flickr photos to be fetched on internet, if any, and take action
+        // pin.getPhotosForPin()
         updateViewOncePhotosAreFetched(true)
         
-        // Fetch photos for pin in coredata
-        do {
-            try fetchedResultsController.performFetch()
-        } catch let error as NSError {
-            print("fetch error: \(error.localizedDescription)")
+        sharedContext.performBlockAndWait {
+            // Fetch photos for pin in coredata
+            do {
+                try self.fetchedResultsController.performFetch()
+            } catch let error as NSError {
+                print("fetch error: \(error.localizedDescription)")
+            }
+            
+            print("Fetched results: \(self.fetchedResultsController.fetchedObjects?.count)")
         }
         
-        print("Fetched results: \(fetchedResultsController.fetchedObjects?.count)")
-        
-        // TODO: Set the delegate to this view controller
+        // Set the delegate to this view controller
         fetchedResultsController.delegate = self
 
         // Show map and pin
@@ -60,23 +69,26 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         mapView.setRegion(region, animated: true)
         mapView.addAnnotation(pinView.annotation!)
         
-        // Observe changes to pin.thumbnailsLoadedCount, it indicates an image is loaded
-        pin.addObserver(self, forKeyPath: "thumbnailsLoadedCount", options: NSKeyValueObservingOptions.New, context: nil) //&observer_context)
-        }
+    }
 
     override func viewWillAppear(animated: Bool) {
         
         navigationController?.navigationBarHidden = false
+        self.newCollectionButton.enabled = false
         viewIsActive = true
-        if !needToReloadData && !loadingInProgress() {
-            newCollectionButton.enabled = true
+        
+        // Observe changes to pin.thumbnailsLoadedCount, it indicates an image is loaded
+        pin.addObserver(self, forKeyPath: "thumbnailsLoadedCount", options: NSKeyValueObservingOptions.New, context: nil) //&observer_context)
+        
+        if !self.needToReloadData && !self.loadingInProgress() {
+            self.newCollectionButton.enabled = true
         }
-
     }
     
     override func viewWillDisappear(animated: Bool) {
         
         viewIsActive = false
+        pin.removeObserver(self, forKeyPath: "thumbnailsLoadedCount")
         super.viewWillDisappear(animated)
     }
     
@@ -108,20 +120,30 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     // MARK: collectionView delegate
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+
         print(">>> selected Cell")
         let cell = collectionView.cellForItemAtIndexPath(indexPath) as! CollectionViewCell
-        if cell.photo != nil {
+        if deleteOnSelection {
+            self.deletePhoto(cell.photo)
+        } else {
+            showFullImage(cell.photo)
+        }
+    }
+    
+    // show new viewController with larger image
+    func showFullImage(photo: Photo?) {
+        
+        if photo != nil {
             let vc = storyboard?.instantiateViewControllerWithIdentifier("PhotoFullViewController") as! PhotoFullViewController
-            let image = cell.photo.fullImage
+            let image = photo!.fullImage
             if image == nil {
-                cell.photo.getFullImageFromUrl() { image, errorStr in
+                photo!.getFullImageFromUrl() { image, errorStr in
                     if image != nil {
                         dispatch_async(dispatch_get_main_queue()) {
                             vc.photoImage = image
                             vc.refresh_image()
                         }
                     } else {
-                        print("\(__FUNCTION__): I was here")
                         dispatch_async(dispatch_get_main_queue()) {
                             vc.errorStr = errorStr
                             vc.show_alert()
@@ -141,18 +163,33 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     // MARK: action button
 
     @IBAction func newCollectionActionTouchUp(sender: UIButton) {
+        
         print(">>> TODO action button - delete old images and photo info")
         dispatch_async(dispatch_get_main_queue()) {
+            self.newCollectionButton.enabled = false
+            self.dontEnableNewCollectionButton = true
             self.activityWheel.startAnimating()
             self.noImageLabel.hidden = true
             self.deletePhotos()
+            self.pin.getPhotosForPin()
+            self.updateViewOncePhotosAreFetched(false)
         }
-        newCollectionButton.enabled = false
-        pin.getPhotosForPin()
-        updateViewOncePhotosAreFetched(false)
     }
 
+    @IBAction func deleteButtonActionTouchUp(sender: AnyObject) {
+        if deleteOnSelection {
+            deleteOnSelection = false
+            deleteButton.tintColor = UIColor.lightGrayColor()
+        } else {
+            deleteOnSelection = true
+            deleteButton.tintColor = UIColor.redColor()
+        }
+    }
+    
+    // MARK: view updates
+    
     func updateViewOncePhotosAreFetched(initView: Bool) {
+        
         // wait for flickr photos to be fetched, and take action
         pin.getPhotoCount() { count, errorStr in
             if let errorStr = errorStr {
@@ -164,14 +201,15 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
                 dispatch_async(dispatch_get_main_queue()) {
                     self.noImageLabel.hidden = false
                     self.activityWheel.stopAnimating()
+                    self.dontEnableNewCollectionButton = false
                     if !self.needToReloadData && !self.loadingInProgress() {
                         self.newCollectionButton.enabled = true
                     }
-                    
                 }
             } else {
                 dispatch_async(dispatch_get_main_queue()) {
                     self.activityWheel.stopAnimating()
+                    self.dontEnableNewCollectionButton = false
                     if (initView) {
                         // the images may already be loaded when viewDidLoad is called
                         self.reloadCollectionView()
@@ -187,10 +225,9 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
         self.needToReloadData = false
         self.collectionView.reloadData()
         self.reloading = false
-        if !self.needToReloadData && !self.loadingInProgress() {
+        if !self.needToReloadData && !self.dontEnableNewCollectionButton && !self.loadingInProgress() {
             self.newCollectionButton.enabled = true
         }
-
     }
     
     // MARK: delegate to process changes to Photo store
@@ -201,8 +238,13 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
             //print(">>> INSERTING photo")
             //self.collectionView.reloadData()
             break
-        case .Delete: break
-        case .Move: break
+        case .Delete:
+            print(">>> Deleting photo")
+            dispatch_async(dispatch_get_main_queue()) {
+                self.reloadCollectionView()
+            }
+        case .Move:
+            break
         case .Update:
             if let photo = anObject as? Photo {
                 print(">>> UPDATING photo: isLoaded=\(photo.thumbNail_status.isLoaded)")
@@ -225,36 +267,55 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
             super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
         }
     }
-
+    
     // MARK: coredata
+    
+    func deletePhoto(photo: Photo?) {
+        
+        if photo != nil {
+                photo!.thumbNail = nil
+                photo!.fullImage = nil
+                // delete the photo object
+                self.sharedContext.deleteObject(photo!)
+                CoreDataStackManager.sharedInstance().saveContext()
+        }
+    }
     
     func deletePhotos() {
         
-        let photos = fetchedResultsController.fetchedObjects as! [Photo]
-        for photo in photos {
-            // delete images from cache and disk
-            photo.thumbNail = nil
-            photo.fullImage = nil
-            // delete the photo object
-            sharedContext.deleteObject(photo)
+        dispatch_async(dispatch_get_main_queue()) {
+            let photos = self.fetchedResultsController.fetchedObjects as! [Photo]
+            for photo in photos {
+                // delete images from cache and disk
+                photo.thumbNail = nil
+                photo.fullImage = nil
+                // delete the photo object
+                self.sharedContext.deleteObject(photo)
+            }
+            CoreDataStackManager.sharedInstance().saveContext()
         }
-        
-        CoreDataStackManager.sharedInstance().saveContext()
     }
     
     func loadingInProgress() -> Bool {
-        let photos = self.fetchedResultsController.fetchedObjects as! [Photo]
+        
         var isLoading = false
-        for photo in photos {
-            if photo.thumbNail_status.isLoading {
-                isLoading = true
-                break
+        if pin.arePhotosLoading {
+            return true
+        }
+        sharedContext.performBlockAndWait {
+            let photos = self.fetchedResultsController.fetchedObjects as! [Photo]
+            for photo in photos {
+                if photo.thumbNail_status.isLoading {
+                    isLoading = true
+                    break
+                }
             }
         }
         return isLoading
     }
-    
+
     var sharedContext: NSManagedObjectContext {
+        
         return CoreDataStackManager.sharedInstance().managedObjectContext
     }
 

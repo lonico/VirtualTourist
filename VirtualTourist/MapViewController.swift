@@ -84,13 +84,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             updateLocation(currentAnnotation, point: point)
             currentAnnotation.updateTitle()
             print(">>> ending drop and drag action")
-            let pin = Pin(coordinate: currentAnnotation.coordinate, context: sharedContext)
+            _ = Pin(coordinate: currentAnnotation.coordinate, context: sharedContext)
             CoreDataStackManager.sharedInstance().saveContext()
-            pins[currentAnnotation] = pin
-            pin.annotation = currentAnnotation
-            // let's proactively search pictures in flickr
-            // error reporting will be done when the results are needed in collectionView
-            pin.getPhotosForPin()
         }
     }
     
@@ -145,9 +140,15 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         switch type {
         case .Insert:
             print(">>> INSERTING pin")
-        case .Delete: break
-        case .Move: break
-        case .Update:
+            let pin = anObject as! Pin
+            pins[currentAnnotation] = pin
+            pin.annotation = currentAnnotation
+            // let's proactively search pictures in flickr
+            // error reporting will be done when the results are needed in collectionView
+            pin.getPhotosForPin()
+        case .Delete: print(">>> DELETING pin")
+        case .Move: print(">>> MOVING pin")
+        case .Update: print(">>> UPDATING pin")
             // locality or [photo] update (mostly photo)
 //            print(">>> Updating pin")
 //            if let pin = anObject as? Pin {

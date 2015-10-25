@@ -87,22 +87,25 @@ class Photo: NSManagedObject {
         if thumbNail_status.isLoading {
             return
         }
-        thumbNail_status.isLoading = true
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0)) {
-            HttpRequest.sharedInstance().getImageFromURLString(self.url_t) { image, strerror in
-                
-                if image != nil {
+        self.thumbNail_status.isLoading = true
+        HttpRequest.sharedInstance().getImageFromURLString(self.url_t) { image, strerror in
+            
+            if image != nil {
+                self.sharedContext.performBlockAndWait {
                     self.thumbNail = image!
+                    self.thumbNail_status.isLoading = false
                     self.pin?.incrementLoadedThumbnailsCount()
-                    self.thumbNail_status.isLoaded = true
-                } else if strerror != nil {
-                    // TODO: report errors, but not for every thumbnail
-                    print(strerror)
-                } else {
-                    print("Unexpected error in \(__FUNCTION__): getImageFromURLString")
                 }
-                self.thumbNail_status.isLoading = false
+                self.thumbNail_status.isLoaded = true
+            } else if strerror != nil {
+                // TODO: report errors, but not for every thumbnail
+                print(strerror)
+                self.thumbNail_status.strerror = strerror
+            } else {
+                print("Unexpected error in \(__FUNCTION__): getImageFromURLString")
+                self.thumbNail_status.strerror = "unexpected error"
             }
+            self.thumbNail_status.isLoading = false
         }
     }
 
@@ -122,19 +125,27 @@ class Photo: NSManagedObject {
         
         fullImage_status.isLoading = true
         HttpRequest.sharedInstance().getImageFromURLString(self.url_m) { image, strerror in
-                
-            if image != nil {
-                self.fullImage = image!
-                self.fullImage_status.isLoaded = true
-            } else if strerror != nil {
-                print("\(__FUNCTION__): I was here")
-                print(strerror)
-            } else {
-                print("Unexpected error in \(__FUNCTION__): getImageFromURLString")
+            
+            self.sharedContext.performBlockAndWait {
+                if image != nil {
+                    self.fullImage = image!
+                    self.fullImage_status.isLoaded = true
+                } else if strerror != nil {
+                    print("\(__FUNCTION__): I was here")
+                    print(strerror)
+                } else {
+                    print("Unexpected error in \(__FUNCTION__): getImageFromURLString")
+                }
+                self.fullImage_status.isLoading = false
             }
-            self.fullImage_status.isLoading = false
             completion_handler(image: image, sterror: strerror)
         }
+    }
+    
+    // MARK: coredata
+    
+    var sharedContext: NSManagedObjectContext {
+        return CoreDataStackManager.sharedInstance().managedObjectContext
     }
 }
 

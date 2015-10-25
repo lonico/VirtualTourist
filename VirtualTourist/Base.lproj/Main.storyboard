@@ -197,10 +197,17 @@
                     </view>
                     <navigationItem key="navigationItem" id="nCB-KB-hyL">
                         <barButtonItem key="backBarButtonItem" title="OK" id="Ejm-B1-wsL"/>
+                        <barButtonItem key="rightBarButtonItem" title="Delete" id="DWQ-hf-wbP" userLabel="Delete">
+                            <color key="tintColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="deleteButtonActionTouchUp:" destination="aK1-Sr-9xG" id="K8f-Wy-qqL"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="activityWheel" destination="OJc-XO-YEt" id="4wH-Ii-saS"/>
                         <outlet property="collectionView" destination="duP-1W-0Lt" id="SRw-ii-dIK"/>
+                        <outlet property="deleteButton" destination="DWQ-hf-wbP" id="Quk-C4-6oN"/>
                         <outlet property="mapView" destination="m8V-bM-d4Z" id="QB9-S6-3m2"/>
                         <outlet property="newCollectionButton" destination="rEd-F7-dIT" id="bsM-dr-yC7"/>
                         <outlet property="noImageLabel" destination="nzU-1S-345" id="W0k-7H-wuN"/>

@@ -42,6 +42,7 @@ class Pin: NSManagedObject {
     }
     
     var coordinate: CLLocationCoordinate2D {
+        
         return CLLocationCoordinate2DMake(latitude, longitude)
     }
     
@@ -52,6 +53,7 @@ class Pin: NSManagedObject {
         FlickrAPI.getPhotosFromFlickrForCoordinate(coordinate) { photos, errorStr in
             
             if let photos = photos {
+                print(">>> pin photo count - before: \(photos.count)")
                 for photo in photos {
                     var dictionary = [String:AnyObject]()
                     // Sanitize dictionary
@@ -59,14 +61,14 @@ class Pin: NSManagedObject {
                     dictionary[Photo.Key.url_m] = photo[Photo.Key.url_m] ?? ""
                     dictionary[Photo.Key.url_t] = photo[Photo.Key.url_t]
                     if dictionary[Photo.Key.url_t] != nil {
-                        dictionary[Photo.Key.pin] = self
-                        dispatch_async(dispatch_get_main_queue()) {
+                        self.sharedContext.performBlockAndWait {
+                            dictionary[Photo.Key.pin] = self
                             _ = Photo(dictionary: dictionary, context: self.sharedContext)
                             CoreDataStackManager.sharedInstance().saveContext()
                         }
                     }
                 }
-                print(">>> pin photo count: \(photos.count)")
+                print(">>> pin photo count - after: \(photos.count)")
             } else if let errorStr = errorStr {
                 print(errorStr)
                 self.errorStr = errorStr
@@ -79,8 +81,9 @@ class Pin: NSManagedObject {
     }
     
     func getPhotoCount(completion_handler: (Int, String?) -> Void) {
+
         var sleeptime = 0
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0)) {
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
             while self.arePhotosLoading {
                 print(">>> Sleeping... \(sleeptime)")
                 sleep(1)
@@ -95,31 +98,23 @@ class Pin: NSManagedObject {
                     break
                 }
             }
-            completion_handler(self.photos.count, self.errorStr)
+            var count = Int()
+            self.sharedContext.performBlockAndWait {
+                count = self.photos.count
+            }
+            completion_handler(count, self.errorStr)
         }
     }
     
     func incrementLoadedThumbnailsCount() {
+
         thumbnailsLoadedCount++
     }
-    
-    func deletePhotos() {
-        let photos_array = self.photos
-        _ = photos_array.map {
-            // remove images from cache and disk
-            print("deleting photo")
-            $0.thumbNail = nil
-            $0.fullImage = nil
-            self.sharedContext.deleteObject($0)
-        }
-        print(">>> done with images: \(photos.count)")
-        //photos.removeAll()
-    }
-    
+        
     // MARK: coredata
     
     var sharedContext: NSManagedObjectContext {
+
         return CoreDataStackManager.sharedInstance().managedObjectContext
     }
-
 }
