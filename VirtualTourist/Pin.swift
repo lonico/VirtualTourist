@@ -24,6 +24,7 @@ class Pin: NSManagedObject {
     dynamic var thumbnailsLoadedCount = 0
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+        
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
 

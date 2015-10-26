@@ -36,6 +36,7 @@ class Photo: NSManagedObject {
     var fullImage_status = Status()
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+        
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
@@ -145,6 +146,7 @@ class Photo: NSManagedObject {
     // MARK: coredata
     
     var sharedContext: NSManagedObjectContext {
+        
         return CoreDataStackManager.sharedInstance().managedObjectContext
     }
     

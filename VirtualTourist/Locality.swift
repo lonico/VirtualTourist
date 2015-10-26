@@ -26,6 +26,7 @@ class Locality: NSManagedObject {
     @NSManaged var pin:Pin
 
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+        
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
@@ -41,6 +42,7 @@ class Locality: NSManagedObject {
     }
 
     var fullname: String {
+        
         return [name, administrativeArea, country].joinWithSeparator(", ")
     }
 }

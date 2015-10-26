@@ -1,9 +1,10 @@
 //
-//  File.swift
-//  FavoriteActors
+//  ImageCache.swift
+//  VirtualTourist
 //
 //  Created by Jason on 1/31/15.
 //  Copyright (c) 2015 Udacity. All rights reserved.
+//  Modified by Laurent Nicolas on October 15.
 //
 
 import UIKit

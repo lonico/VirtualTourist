@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C00853D61BCF48040096A8B6 /* CoreDataStackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00853D51BCF48040096A8B6 /* CoreDataStackManager.swift */; settings = {ASSET_TAGS = (); }; };
-		C00853D81BCF488F0096A8B6 /* Pin.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00853D71BCF488F0096A8B6 /* Pin.swift */; settings = {ASSET_TAGS = (); }; };
-		C00853DA1BCF4C270096A8B6 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00853D91BCF4C270096A8B6 /* Photo.swift */; settings = {ASSET_TAGS = (); }; };
+		C00853D61BCF48040096A8B6 /* CoreDataStackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00853D51BCF48040096A8B6 /* CoreDataStackManager.swift */; };
+		C00853D81BCF488F0096A8B6 /* Pin.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00853D71BCF488F0096A8B6 /* Pin.swift */; };
+		C00853DA1BCF4C270096A8B6 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00853D91BCF4C270096A8B6 /* Photo.swift */; };
 		C03F00E61BB7A672002BA7F3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03F00E51BB7A672002BA7F3 /* AppDelegate.swift */; };
 		C03F00EB1BB7A672002BA7F3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C03F00E91BB7A672002BA7F3 /* Main.storyboard */; };
 		C03F00EE1BB7A672002BA7F3 /* VirtualTourist.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C03F00EC1BB7A672002BA7F3 /* VirtualTourist.xcdatamodeld */; };
@@ -17,18 +17,18 @@
 		C03F00F31BB7A672002BA7F3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C03F00F11BB7A672002BA7F3 /* LaunchScreen.storyboard */; };
 		C03F00FE1BB7A672002BA7F3 /* VirtualTouristTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03F00FD1BB7A672002BA7F3 /* VirtualTouristTests.swift */; };
 		C03F01091BB7A672002BA7F3 /* VirtualTouristUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03F01081BB7A672002BA7F3 /* VirtualTouristUITests.swift */; };
-		C03F01171BB7A7D7002BA7F3 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03F01161BB7A7D7002BA7F3 /* MapViewController.swift */; settings = {ASSET_TAGS = (); }; };
-		C0B1522B1BD4AAEA00D0F966 /* GeoCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B1522A1BD4AAE900D0F966 /* GeoCoder.swift */; settings = {ASSET_TAGS = (); }; };
-		C0B1522D1BD4B19400D0F966 /* Locality.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B1522C1BD4B19400D0F966 /* Locality.swift */; settings = {ASSET_TAGS = (); }; };
-		C0BB1A4B1BCF746E002DE346 /* PhotoDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0BB1A4A1BCF746E002DE346 /* PhotoDB.swift */; settings = {ASSET_TAGS = (); }; };
-		C0CBFC0E1BC1E10A006F461F /* FlickrAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CBFC0D1BC1E10A006F461F /* FlickrAPI.swift */; settings = {ASSET_TAGS = (); }; };
-		C0CBFC141BC1E270006F461F /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CBFC131BC1E270006F461F /* HttpRequest.swift */; settings = {ASSET_TAGS = (); }; };
-		C0CBFC521BC1EDF7006F461F /* AlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CBFC511BC1EDF7006F461F /* AlertController.swift */; settings = {ASSET_TAGS = (); }; };
-		C0D24C081BD2106300EE023A /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D24C071BD2106300EE023A /* ImageCache.swift */; settings = {ASSET_TAGS = (); }; };
-		C0D4264E1BBA401D00311C0F /* PhotoGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4264D1BBA401D00311C0F /* PhotoGalleryViewController.swift */; settings = {ASSET_TAGS = (); }; };
-		C0D426501BBB889C00311C0F /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4264F1BBB889C00311C0F /* CollectionViewCell.swift */; settings = {ASSET_TAGS = (); }; };
-		C0D426521BBBA46F00311C0F /* GeoExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D426511BBBA46F00311C0F /* GeoExtensions.swift */; settings = {ASSET_TAGS = (); }; };
-		C0D426581BBE3DED00311C0F /* PhotoFullViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D426571BBE3DED00311C0F /* PhotoFullViewController.swift */; settings = {ASSET_TAGS = (); }; };
+		C03F01171BB7A7D7002BA7F3 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03F01161BB7A7D7002BA7F3 /* MapViewController.swift */; };
+		C0B1522B1BD4AAEA00D0F966 /* GeoCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B1522A1BD4AAE900D0F966 /* GeoCoder.swift */; };
+		C0B1522D1BD4B19400D0F966 /* Locality.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B1522C1BD4B19400D0F966 /* Locality.swift */; };
+		C0BB1A4B1BCF746E002DE346 /* PhotoDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0BB1A4A1BCF746E002DE346 /* PhotoDB.swift */; };
+		C0CBFC0E1BC1E10A006F461F /* FlickrAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CBFC0D1BC1E10A006F461F /* FlickrAPI.swift */; };
+		C0CBFC141BC1E270006F461F /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CBFC131BC1E270006F461F /* HttpRequest.swift */; };
+		C0CBFC521BC1EDF7006F461F /* AlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CBFC511BC1EDF7006F461F /* AlertController.swift */; };
+		C0D24C081BD2106300EE023A /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D24C071BD2106300EE023A /* ImageCache.swift */; };
+		C0D4264E1BBA401D00311C0F /* PhotoGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4264D1BBA401D00311C0F /* PhotoGalleryViewController.swift */; };
+		C0D426501BBB889C00311C0F /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4264F1BBB889C00311C0F /* CollectionViewCell.swift */; };
+		C0D426521BBBA46F00311C0F /* GeoExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D426511BBBA46F00311C0F /* GeoExtensions.swift */; };
+		C0D426581BBE3DED00311C0F /* PhotoFullViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D426571BBE3DED00311C0F /* PhotoFullViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -166,7 +166,6 @@
 				C0B1522A1BD4AAE900D0F966 /* GeoCoder.swift */,
 				C0CBFC0D1BC1E10A006F461F /* FlickrAPI.swift */,
 				C0CBFC131BC1E270006F461F /* HttpRequest.swift */,
-				C0CBFC511BC1EDF7006F461F /* AlertController.swift */,
 				C03F00EC1BB7A672002BA7F3 /* VirtualTourist.xcdatamodeld */,
 			);
 			name = Model;
@@ -175,6 +174,7 @@
 		C0D24C0A1BD21D9A00EE023A /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				C0CBFC511BC1EDF7006F461F /* AlertController.swift */,
 				C03F00E51BB7A672002BA7F3 /* AppDelegate.swift */,
 				C03F01161BB7A7D7002BA7F3 /* MapViewController.swift */,
 				C0D4264D1BBA401D00311C0F /* PhotoGalleryViewController.swift */,

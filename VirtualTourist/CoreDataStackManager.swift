@@ -1,9 +1,10 @@
 //
 //  CoreDataStackManager.swift
-//  FavoriteActors
+//  VirtualTourist
 //
 //  Created by Jason on 3/10/15.
 //  Copyright (c) 2015 Udacity. All rights reserved.
+//  Modified by Laurent Nicolas on October 15.
 //
 
 import Foundation
