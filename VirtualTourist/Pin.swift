@@ -55,7 +55,7 @@ class Pin: NSManagedObject {
         FlickrAPI.getPhotosFromFlickrForCoordinate(coordinate) { photos, errorStr in
             
             if let photos = photos {
-                print(">>> pin photo count - before: \(photos.count)")
+                print(">>> pin photo count: \(photos.count)")
                 for photo in photos {
                     var dictionary = [String:AnyObject]()
                     // Sanitize dictionary
@@ -70,7 +70,6 @@ class Pin: NSManagedObject {
                         }
                     }
                 }
-                print(">>> pin photo count - after: \(photos.count)")
             } else if let errorStr = errorStr {
                 print(errorStr)
                 self.errorStr = errorStr

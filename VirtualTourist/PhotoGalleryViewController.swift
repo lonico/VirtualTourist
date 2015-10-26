@@ -117,7 +117,6 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
 
-        print(">>> selected Cell")
         let cell = collectionView.cellForItemAtIndexPath(indexPath) as! CollectionViewCell
         if deleteOnSelection {
             cell.photo?.deletePhoto(true)
@@ -146,7 +145,7 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
 
     @IBAction func newCollectionActionTouchUp(sender: UIButton) {
         
-        print(">>> TODO action button - delete old images and photo info")
+        // delete old images and photo info, fetch new photos
         dispatch_async(dispatch_get_main_queue()) {
             self.newCollectionButton.enabled = false
             self.dontEnableActions = true
@@ -217,20 +216,17 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         switch type {
         case .Insert:
-            //print(">>> INSERTING photo")
-            //self.collectionView.reloadData()
+            // print(">>> INSERTING photo")
             break
         case .Delete:
-            print(">>> Deleting photo")
+            // print(">>> Deleting photo")
             dispatch_async(dispatch_get_main_queue()) {
                 self.reloadCollectionView()
             }
         case .Move:
             break
         case .Update:
-            if let photo = anObject as? Photo {
-                print(">>> UPDATING photo: isLoaded=\(photo.thumbNail_status.isLoaded)")
-            }
+            break
         }
     }
 
@@ -238,8 +234,8 @@ class PhotoGalleryViewController: UIViewController, UICollectionViewDataSource, 
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         if keyPath == "thumbnailsLoadedCount" {
-            let value = change?[NSKeyValueChangeNewKey] as! Int
-            print(">>> KVO: reloading, as image was added: \(value)")
+            //let value = change?[NSKeyValueChangeNewKey] as! Int
+            //print(">>> KVO: reloading, as image was added: \(value)")
             if !self.reloading {
                 dispatch_async(dispatch_get_main_queue()) {
                     self.reloadCollectionView()

@@ -35,9 +35,9 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         fetchedResultsController.delegate = self
 
         if let stored_pins = fetchedResultsController.fetchedObjects as? [Pin] {
-            print(">>> adding pins")
+            //print(">>> adding pins")
             for pin in stored_pins {
-                print(">>> adding pin")
+                //print(">>> adding pin")
                 let annotation = MKPointAnnotation()
                 annotation.updateCoordinateAndTitle(pin.latitude, longitude: pin.longitude)
                 if (pin.locality != nil) {
@@ -83,7 +83,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             let point = sender.locationInView(mapView)
             updateLocation(currentAnnotation, point: point)
             currentAnnotation.updateTitle()
-            print(">>> ending drop and drag action")
+            // print(">>> ending drop and drag action")
             _ = Pin(coordinate: currentAnnotation.coordinate, context: sharedContext)
             CoreDataStackManager.sharedInstance().saveContext()
         }
@@ -139,23 +139,21 @@ class MapViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         switch type {
         case .Insert:
-            print(">>> INSERTING pin")
+            //print(">>> INSERTING pin")
             let pin = anObject as! Pin
             pins[currentAnnotation] = pin
             pin.annotation = currentAnnotation
             // let's proactively search pictures in flickr
             // error reporting will be done when the results are needed in collectionView
             pin.getPhotosForPin()
-        case .Delete: print(">>> DELETING pin")
-        case .Move: print(">>> MOVING pin")
-        case .Update: print(">>> UPDATING pin")
-            // locality or [photo] update (mostly photo)
-//            print(">>> Updating pin")
-//            if let pin = anObject as? Pin {
-//                if pin.locality != nil {
-//                    pin.annotation!.setLocalityAndCoordTitles(pin.locality!)
-//                }
-//            }
+        case .Delete:
+            //print(">>> DELETING pin")
+            break
+        case .Move:
+            //print(">>> MOVING pin")
+            break
+        case .Update:
+            //print(">>> UPDATING pin")
             break
         }
     }

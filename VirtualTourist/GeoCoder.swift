@@ -22,15 +22,15 @@ struct GeoCoder {
             dictionary[Locality.Key.administrativeArea] = "-"
             dictionary[Locality.Key.country] = "-"
             dictionary[Locality.Key.pin] = pin
-            print(location)
+            // print(location)
             if error != nil {
                 errorStr = "Reverse geocoding error" + error!.localizedDescription
                 print(errorStr)
             } else if placemarks?.count > 0 {
                 let placemark = placemarks![0]
-                print(placemark.locality)
-                print(placemark.administrativeArea)
-                print(placemark.country)
+                // print(placemark.locality)
+                // print(placemark.administrativeArea)
+                // print(placemark.country)
                 //print(placemark)
                 dictionary[Locality.Key.name] = placemark.locality ?? ""
                 dictionary[Locality.Key.administrativeArea] = placemark.administrativeArea ?? ""
@@ -41,7 +41,7 @@ struct GeoCoder {
                 print(errorStr)
             }
             
-            dispatch_async(dispatch_get_main_queue()) {
+            self.sharedContext.performBlock {
                 let locality = Locality(dictionary: dictionary, context: sharedContext)
                 pin.annotation!.setLocalityAndCoordTitles(locality)
                 CoreDataStackManager.sharedInstance().saveContext()
