@@ -79,7 +79,8 @@ class Photo: NSManagedObject {
         }
         
         set {
-            PhotoDB.Cache.imageCache.storeImageForURL(newValue, withIdentifier:url_m)
+            // don't report error on delete (fullImage == nil), as fullImage may not have been stored
+            PhotoDB.Cache.imageCache.storeImageForURL(newValue, withIdentifier:url_m, reportError: fullImage != nil)
         }
     }
     
@@ -153,14 +154,19 @@ class Photo: NSManagedObject {
     func deletePhoto(save: Bool) {
         
         self.sharedContext.performBlockAndWait {
-            self.thumbNail = nil
-            self.fullImage = nil
             // delete the photo object
             self.sharedContext.deleteObject(self)
             if save {
                 CoreDataStackManager.sharedInstance().saveContext()
             }
         }
+    }
+    
+    override func prepareForDeletion() {
+        //print(">>> prepare for deletion")
+        self.thumbNail = nil
+        self.fullImage = nil
+        super.prepareForDeletion()
     }
 
 }
